@@ -31,5 +31,11 @@
  "https://cdn.sanity.io/images/4zrzovbb/website/5c0c0e9fe4def0b584c04d37849941da55e5e71c-2401x1000.png": "/figs/ext/sanity-44283a-5c0c0e9fe4def0b584c04d37849941da55e5e71c.png",
  "https://cdn.sanity.io/images/4zrzovbb/website/4b9a1f4eb63d5962a6e1746ac26bbc857cf3474f-2400x1666.png": "/figs/ext/sanity-a00be5-4b9a1f4eb63d5962a6e1746ac26bbc857cf3474f.png",
  "https://cdn.sanity.io/images/4zrzovbb/website/8985fc683fae4780fb34eab1365ab78c7e51bc8e-2401x1000.png": "/figs/ext/sanity-f1652b-8985fc683fae4780fb34eab1365ab78c7e51bc8e.png",
- "https://cdn.sanity.io/images/4zrzovbb/website/406bb032ca007fd1624f261af717d70e6ca86286-2401x1000.png": "/figs/ext/sanity-3ceb47-406bb032ca007fd1624f261af717d70e6ca86286.png"
+ "https://cdn.sanity.io/images/4zrzovbb/website/406bb032ca007fd1624f261af717d70e6ca86286-2401x1000.png": "/figs/ext/sanity-3ceb47-406bb032ca007fd1624f261af717d70e6ca86286.png",
+ "https://cdn.sanity.io/images/4zrzovbb/website/1198befc0b33726c45692ac40f764022f4de1bf2-4584x2579.png": "/figs/ext/sanity-b1f57b-1198befc0b33726c45692ac40f764022f4de1bf2.png",
+ "https://arxiv.org/html/2309.06180v1/system-overview.png": "/figs/ext/arxiv-5786f1-system-overview.png",
+ "https://cdn.sanity.io/images/4zrzovbb/website/14f51e6406ccb29e695da48b17017e899a6119c7-2401x1000.png": "/figs/ext/sanity-8a280a-14f51e6406ccb29e695da48b17017e899a6119c7.png",
+ "https://upload.wikimedia.org/wikipedia/commons/5/55/Transformer,_one_decoder_block.png": "/figs/ext/wikimedia-a51166-Transformer__one_decoder_block.png",
+ "https://arxiv.org/html/2503.18813v2/system_diagram_v2.png": "/figs/ext/arxiv-35b894-system_diagram_v2.png",
+ "https://arxiv.org/html/2312.10997v5/images/rag_summary.png": "/figs/ext/arxiv-f54d4d-rag_summary.png"
 }
