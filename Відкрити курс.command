@@ -15,8 +15,17 @@ if [ ! -d node_modules ]; then
   npm install --silent || { echo "Не вдалося встановити залежності"; read -r; exit 1; }
 fi
 
-if [ ! -d .vitepress/dist ]; then
-  echo "Збираю сайт (одноразово)…"
+# Пересобираємо, якщо збірки немає або вона старіша за джерела чи компоненти.
+NEEDS_BUILD=0
+[ -d .vitepress/dist ] || NEEDS_BUILD=1
+if [ -d .vitepress/dist ]; then
+  NEWER=$(find lectures .vitepress/theme *.md -newer .vitepress/dist/index.html 2>/dev/null | head -1)
+  [ -n "$NEWER" ] && NEEDS_BUILD=1
+fi
+
+if [ "$NEEDS_BUILD" = "1" ]; then
+  echo "Збираю сайт…"
+  unset BASE OFFLINE
   npm run build --silent || { echo "Не вдалося зібрати"; read -r; exit 1; }
 fi
 
