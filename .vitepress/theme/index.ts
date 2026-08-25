@@ -27,6 +27,10 @@ import MemoryLab from './components/MemoryLab.vue'
 import GraphLab from './components/GraphLab.vue'
 import MultiAgentLab from './components/MultiAgentLab.vue'
 import TrifectaLab from './components/TrifectaLab.vue'
+import Cards from './components/Cards.vue'
+import Steps from './components/Steps.vue'
+import Compare from './components/Compare.vue'
+import Timeline from './components/Timeline.vue'
 import RunOutput from './components/RunOutput.vue'
 import CourseHome from './components/CourseHome.vue'
 
@@ -61,6 +65,10 @@ export default {
     app.component('GraphLab', GraphLab)
     app.component('MultiAgentLab', MultiAgentLab)
     app.component('TrifectaLab', TrifectaLab)
+    app.component('Cards', Cards)
+    app.component('Steps', Steps)
+    app.component('Compare', Compare)
+    app.component('Timeline', Timeline)
     app.component('RunOutput', RunOutput)
     app.component('CourseHome', CourseHome)
   },
