@@ -16,6 +16,7 @@ export default defineConfig({
     image: { lazyLoading: true }
   },
   head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { name: 'theme-color', content: '#3D4EC4' }],
     ['meta', { property: 'og:title', content: 'Прикладні ШІ-агенти та системи на основі LLM' }],
   ],

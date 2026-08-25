@@ -17,6 +17,16 @@ import LatencyLab from './components/LatencyLab.vue'
 import CILab from './components/CILab.vue'
 import PassKLab from './components/PassKLab.vue'
 import PromptAnatomy from './components/PromptAnatomy.vue'
+import ContractLab from './components/ContractLab.vue'
+import SearchLab from './components/SearchLab.vue'
+import ChunkingLab from './components/ChunkingLab.vue'
+import AgentLoopLab from './components/AgentLoopLab.vue'
+import ToolSpecLab from './components/ToolSpecLab.vue'
+import MxNLab from './components/MxNLab.vue'
+import MemoryLab from './components/MemoryLab.vue'
+import GraphLab from './components/GraphLab.vue'
+import MultiAgentLab from './components/MultiAgentLab.vue'
+import TrifectaLab from './components/TrifectaLab.vue'
 import RunOutput from './components/RunOutput.vue'
 import CourseHome from './components/CourseHome.vue'
 
@@ -41,6 +51,16 @@ export default {
     app.component('CILab', CILab)
     app.component('PassKLab', PassKLab)
     app.component('PromptAnatomy', PromptAnatomy)
+    app.component('ContractLab', ContractLab)
+    app.component('SearchLab', SearchLab)
+    app.component('ChunkingLab', ChunkingLab)
+    app.component('AgentLoopLab', AgentLoopLab)
+    app.component('ToolSpecLab', ToolSpecLab)
+    app.component('MxNLab', MxNLab)
+    app.component('MemoryLab', MemoryLab)
+    app.component('GraphLab', GraphLab)
+    app.component('MultiAgentLab', MultiAgentLab)
+    app.component('TrifectaLab', TrifectaLab)
     app.component('RunOutput', RunOutput)
     app.component('CourseHome', CourseHome)
   },
