@@ -1,12 +1,15 @@
 import { defineConfig } from 'vitepress'
 
+// Той самий base потрібен і для тегів у <head>: вони не проходять через withBase.
+const base = process.env.BASE ?? '/'
+
 export default defineConfig({
   title: 'Прикладні ШІ-агенти',
   description: 'Магістерський курс: прикладні ШІ-агенти та системи на основі великих мовних моделей. КПІ, спеціальність 122.',
   lang: 'uk-UA',
   // GitHub Pages у підкаталозі вимагає base='/<репозиторій>/'.
   // Задається змінною оточення, тому той самий код працює і на власному домені.
-  base: process.env.BASE ?? '/',
+  base,
   cleanUrls: true,
   lastUpdated: true,
   markdown: {
@@ -16,7 +19,7 @@ export default defineConfig({
     image: { lazyLoading: true }
   },
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: base + 'favicon.svg' }],
     ['meta', { name: 'theme-color', content: '#3D4EC4' }],
     ['meta', { property: 'og:title', content: 'Прикладні ШІ-агенти та системи на основі LLM' }],
   ],
