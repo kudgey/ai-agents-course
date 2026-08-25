@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, computed } from 'vue'
+import { withBase } from 'vitepress'
 
-defineProps<{ src: string; alt?: string }>()
+const props = defineProps<{ src: string; alt?: string }>()
+
+// Сайт може жити в підкаталозі (GitHub Pages), тому абсолютний шлях
+// до картинки треба пропустити через withBase, інакше буде 404.
+const href = computed(() => withBase(props.src))
 
 const zoomed = ref<string | null>(null)
 
@@ -21,8 +26,8 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
 
 <template>
   <figure class="uk-figure">
-    <div class="uk-figure__frame" @click="open(src)" :title="'Збільшити: ' + (alt || '')">
-      <img :src="src" :alt="alt" loading="lazy" />
+    <div class="uk-figure__frame" @click="open(href)" :title="'Збільшити: ' + (alt || '')">
+      <img :src="href" :alt="alt" loading="lazy" />
     </div>
     <figcaption class="uk-figure__caption">
       <slot />
