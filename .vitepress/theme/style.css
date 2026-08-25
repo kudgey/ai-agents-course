@@ -347,14 +347,22 @@ html.uk-pres .VPContent.has-sidebar {
 }
 
 html.uk-pres .VPDoc {
-  padding-left: 3rem !important;
-  padding-right: 3rem !important;
+  padding: 0 2rem !important;
 }
 
-html.uk-pres .VPDoc .container,
-html.uk-pres .VPDoc .content {
-  max-width: 1180px !important;
-  margin: 0 auto;
+/* у звичайному режимі ширину тримає VitePress; тут центруємо самі */
+html.uk-pres .VPDoc .container {
+  max-width: 1120px !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+html.uk-pres .VPDoc .content,
+html.uk-pres .VPDoc.has-aside .content-container,
+html.uk-pres .VPDoc .content-container {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 html.uk-pres .vp-doc > div > p {
