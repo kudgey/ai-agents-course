@@ -1,5 +1,7 @@
 <script setup lang="ts">
 /** Головна: карта курсу за блоками. */
+import { withBase } from 'vitepress'
+
 const BLOCKS = [
   {
     code: 'A',
@@ -76,7 +78,7 @@ const BLOCKS = [
       <p class="uk-block__lead">{{ b.lead }}</p>
       <ol>
         <li v-for="l in b.items" :key="l.id">
-          <a :href="`/lectures/${l.id}`">{{ l.t }}</a>
+          <a :href="withBase(`/lectures/${l.id}`)">{{ l.t }}</a>
         </li>
       </ol>
     </section>
