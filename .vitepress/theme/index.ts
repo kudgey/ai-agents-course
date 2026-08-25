@@ -31,6 +31,7 @@ import Cards from './components/Cards.vue'
 import Steps from './components/Steps.vue'
 import Compare from './components/Compare.vue'
 import Timeline from './components/Timeline.vue'
+import Resources from './components/Resources.vue'
 import RunOutput from './components/RunOutput.vue'
 import CourseHome from './components/CourseHome.vue'
 
@@ -69,6 +70,7 @@ export default {
     app.component('Steps', Steps)
     app.component('Compare', Compare)
     app.component('Timeline', Timeline)
+    app.component('Resources', Resources)
     app.component('RunOutput', RunOutput)
     app.component('CourseHome', CourseHome)
   },
