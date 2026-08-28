@@ -124,11 +124,6 @@ const LIT = [
         </tr>
       </tbody>
     </table>
-    <p class="uk-sources__note">
-      Власні схеми курсу відкриті за ліцензією CC BY 4.0:
-      <a href="https://github.com/kudgey/ai-agents-course-figures" target="_blank" rel="noopener">github.com/kudgey/ai-agents-course-figures</a>.
-    </p>
-
     <h3>Основна література й документація</h3>
     <ul class="uk-sources__lit">
       <li v-for="l in LIT" :key="l.u">

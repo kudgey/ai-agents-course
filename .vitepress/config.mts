@@ -11,7 +11,7 @@ export default defineConfig({
   // Задається змінною оточення, тому той самий код працює і на власному домені.
   base,
   cleanUrls: true,
-  lastUpdated: true,
+  srcExclude: ['README.md'],
   markdown: {
     math: true,
     lineNumbers: true,
@@ -83,16 +83,12 @@ export default defineConfig({
       ]
     }
     ],
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/kudgey/ai-agents-course-figures' }
-    ],
     docFooter: { prev: 'Попередня лекція', next: 'Наступна лекція' },
     darkModeSwitchLabel: 'Тема',
     lightModeSwitchTitle: 'Світла тема',
     darkModeSwitchTitle: 'Темна тема',
     sidebarMenuLabel: 'Розділи',
     returnToTopLabel: 'Догори',
-    lastUpdatedText: 'Оновлено',
     search: {
       provider: 'local',
       options: {
