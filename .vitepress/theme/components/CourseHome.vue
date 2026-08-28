@@ -57,6 +57,28 @@ const BLOCKS = [
     ]
   }
 ]
+
+const FIGS = [
+  { src: 'Anthropic, Building Effective Agents', url: 'https://www.anthropic.com/engineering/building-effective-agents', got: 'розширена LLM, цикл агента, патерни воркфлоу' },
+  { src: 'Anthropic, Effective context engineering', url: 'https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents', got: 'калібрування системного промпта' },
+  { src: 'Jay Alammar, The Illustrated Transformer', url: 'https://jalammar.github.io/illustrated-transformer/', got: 'Q/K/V, ваги attention, логіти → softmax' },
+  { src: 'Wikimedia Commons', url: 'https://commons.wikimedia.org/', got: 'архітектура Transformer, GPT, схема RAG' },
+  { src: 'Sebastian Raschka, LLMs from Scratch', url: 'https://github.com/rasbt/LLMs-from-scratch', got: 'конвеєр входу, таблиця embeddings' },
+  { src: 'Hugging Face, Illustrating RLHF', url: 'https://huggingface.co/blog/rlhf', got: 'передтренування, reward-модель, цикл RLHF' },
+  { src: 'Gao та ін., RAG Survey', url: 'https://arxiv.org/abs/2312.10997', got: 'конвеєр RAG, три покоління' },
+  { src: 'Rafailov та ін., DPO', url: 'https://arxiv.org/abs/2305.18290', got: 'RLHF проти DPO' }
+]
+
+const LIT = [
+  { t: 'Jurafsky D., Martin J. H. Speech and Language Processing', u: 'https://web.stanford.edu/~jurafsky/slp3/', n: '3rd ed. draft, 2026' },
+  { t: 'Xiao T., Zhu J. Foundations of Large Language Models', u: 'https://arxiv.org/abs/2501.09223', n: 'arXiv:2501.09223, 2025' },
+  { t: 'Raschka S. Build a Large Language Model (From Scratch)', u: 'https://github.com/rasbt/LLMs-from-scratch', n: 'Manning, 2024' },
+  { t: 'Vaswani A. et al. Attention Is All You Need', u: 'https://arxiv.org/abs/1706.03762', n: 'NeurIPS, 2017' },
+  { t: 'Model Context Protocol', u: 'https://modelcontextprotocol.io/', n: 'офіційна специфікація' },
+  { t: 'LangGraph', u: 'https://docs.langchain.com/oss/python/langgraph/overview', n: 'документація' },
+  { t: 'vLLM', u: 'https://docs.vllm.ai/', n: 'документація' },
+  { t: 'Hugging Face Transformers', u: 'https://huggingface.co/docs/transformers', n: 'документація' }
+]
 </script>
 
 <template>
@@ -83,6 +105,42 @@ const BLOCKS = [
       </ol>
     </section>
   </div>
+
+  <section class="uk-sources">
+    <h2>Джерела</h2>
+    <p class="uk-sources__lead">
+      Пріоритет — готові схеми з першоджерел; власні намальовано лише там, де готового
+      аналога немає. Під кожною зовнішньою ілюстрацією на слайді стоїть посилання на джерело.
+      Повні списки — наприкінці кожної лекції, поруч із темою, якої вони стосуються.
+    </p>
+
+    <h3>Ілюстрації</h3>
+    <table class="uk-sources__table">
+      <thead><tr><th>Джерело</th><th>Що взято</th></tr></thead>
+      <tbody>
+        <tr v-for="f in FIGS" :key="f.url">
+          <td><a :href="f.url" target="_blank" rel="noopener">{{ f.src }}</a></td>
+          <td>{{ f.got }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="uk-sources__note">
+      Власні схеми курсу відкриті за ліцензією CC BY 4.0:
+      <a href="https://github.com/kudgey/ai-agents-course-figures" target="_blank" rel="noopener">github.com/kudgey/ai-agents-course-figures</a>.
+    </p>
+
+    <h3>Основна література й документація</h3>
+    <ul class="uk-sources__lit">
+      <li v-for="l in LIT" :key="l.u">
+        <a :href="l.u" target="_blank" rel="noopener">{{ l.t }}</a>
+        <span class="uk-sources__meta">{{ l.n }}</span>
+      </li>
+    </ul>
+
+    <p class="uk-sources__note">
+      <a :href="withBase('/syllabus-2026.pdf')">Силабус дисципліни у PDF</a>
+    </p>
+  </section>
 </template>
 
 <style scoped>
@@ -94,4 +152,15 @@ const BLOCKS = [
 }
 .uk-block ol { list-style: decimal; }
 .uk-block ol li::marker { font-family: var(--vp-font-family-mono); font-size: 0.78rem; color: var(--vp-c-text-3); }
+
+.uk-sources { margin: 3.5rem 0 0; padding-top: 2rem; border-top: 1px solid var(--uk-line); }
+.uk-sources h2 { font-size: 1.35rem; margin: 0 0 0.6rem; border: 0; padding: 0; }
+.uk-sources h3 { font-size: 0.95rem; margin: 1.8rem 0 0.6rem; }
+.uk-sources__lead { font-size: 0.88rem; line-height: 1.6; color: var(--vp-c-text-2); max-width: 62ch; margin: 0; }
+.uk-sources__table { font-size: 0.85rem; margin: 0; }
+.uk-sources__table td:last-child { color: var(--vp-c-text-2); }
+.uk-sources__note { font-size: 0.85rem; color: var(--vp-c-text-2); margin: 0.9rem 0 0; }
+.uk-sources__lit { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.uk-sources__lit li { font-size: 0.85rem; line-height: 1.5; }
+.uk-sources__meta { color: var(--vp-c-text-3); font-size: 0.78rem; margin-left: 0.45rem; }
 </style>
