@@ -66,7 +66,10 @@ const FIGS = [
   { src: 'Sebastian Raschka, LLMs from Scratch', url: 'https://github.com/rasbt/LLMs-from-scratch', got: 'конвеєр входу, таблиця embeddings' },
   { src: 'Hugging Face, Illustrating RLHF', url: 'https://huggingface.co/blog/rlhf', got: 'передтренування, reward-модель, цикл RLHF' },
   { src: 'Gao та ін., RAG Survey', url: 'https://arxiv.org/abs/2312.10997', got: 'конвеєр RAG, три покоління' },
-  { src: 'Rafailov та ін., DPO', url: 'https://arxiv.org/abs/2305.18290', got: 'RLHF проти DPO' }
+  { src: 'Rafailov та ін., DPO', url: 'https://arxiv.org/abs/2305.18290', got: 'RLHF проти DPO' },
+  { src: 'Kwon та ін., PagedAttention', url: 'https://arxiv.org/abs/2309.06180', got: 'архітектура сервінгу vLLM' },
+  { src: 'Anthropic, Multi-agent research system', url: 'https://www.anthropic.com/engineering/multi-agent-research-system', got: 'оркестратор і пошукові підагенти' },
+  { src: 'Debenedetti та ін., CaMeL', url: 'https://arxiv.org/abs/2503.18813', got: 'два інтерпретатори і граф даних' }
 ]
 
 const LIT = [
@@ -83,7 +86,7 @@ const LIT = [
 
 <template>
   <div class="uk-hero">
-    <div class="uk-hero__eyebrow">КПІ ім. Ігоря Сікорського · спеціальність F3 · бакалаврат, 4 курс</div>
+    <div class="uk-hero__eyebrow">КПІ ім. Ігоря Сікорського · спеціальність F3 · бакалаврат, 4 курс · 2026/2027</div>
     <h1>Прикладні AI-агенти та LLM-орієнтовані системи</h1>
     <p class="uk-hero__lead">
       Вісімнадцять лекцій про те, як зібрати робочу систему навколо мовної моделі: від того,
@@ -91,6 +94,7 @@ const LIT = [
       Наскрізний приклад — асистент навчального відділу — росте від типізованого клієнта
       до захищеного агента.
     </p>
+    <p class="uk-hero__author">Kirill Riazanovskiy, PhD</p>
   </div>
 
   <div class="uk-blocks">
@@ -110,7 +114,7 @@ const LIT = [
     <h2>Джерела</h2>
     <p class="uk-sources__lead">
       Пріоритет — готові схеми з першоджерел; власні намальовано лише там, де готового
-      аналога немає. Під кожною зовнішньою ілюстрацією на слайді стоїть посилання на джерело.
+      аналога немає. Під кожною зовнішньою ілюстрацією стоїть посилання на джерело.
       Повні списки — наприкінці кожної лекції, поруч із темою, якої вони стосуються.
     </p>
 
@@ -139,6 +143,12 @@ const LIT = [
 </template>
 
 <style scoped>
+.uk-hero__author {
+  margin: 1.1rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+}
 .uk-block__lead {
   font-size: 0.86rem;
   line-height: 1.5;
