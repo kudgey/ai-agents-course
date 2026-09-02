@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 export npm_config_cache="$HOME/.npm-cache-course"
 PORT=4173
 
-echo "Курс «Прикладні ШІ-агенти»"
+echo "Курс «Прикладні AI-агенти»"
 echo "Піднімаю локальний сервер…"
 
 if [ ! -d node_modules ]; then

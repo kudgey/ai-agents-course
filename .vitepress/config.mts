@@ -4,8 +4,8 @@ import { defineConfig } from 'vitepress'
 const base = process.env.BASE ?? '/'
 
 export default defineConfig({
-  title: 'Прикладні ШІ-агенти',
-  description: 'Курс четвертого року бакалаврату: прикладні ШІ-агенти та системи на основі великих мовних моделей. КПІ, спеціальність F3.',
+  title: 'Прикладні AI-агенти',
+  description: 'Курс четвертого року бакалаврату: прикладні AI-агенти та LLM-орієнтовані системи. КПІ, спеціальність F3.',
   lang: 'uk-UA',
   // GitHub Pages у підкаталозі вимагає base='/<репозиторій>/'.
   // Задається змінною оточення, тому той самий код працює і на власному домені.
@@ -21,7 +21,7 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: base + 'favicon.svg' }],
     ['meta', { name: 'theme-color', content: '#3D4EC4' }],
-    ['meta', { property: 'og:title', content: 'Прикладні ШІ-агенти та системи на основі LLM' }],
+    ['meta', { property: 'og:title', content: 'Прикладні AI-агенти та LLM-орієнтовані системи' }],
   ],
   themeConfig: {
     outline: { level: [2, 3], label: 'На цій сторінці' },
