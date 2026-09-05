@@ -69,7 +69,10 @@ const FIGS = [
   { src: 'Rafailov та ін., DPO', url: 'https://arxiv.org/abs/2305.18290', got: 'RLHF проти DPO' },
   { src: 'Kwon та ін., PagedAttention', url: 'https://arxiv.org/abs/2309.06180', got: 'архітектура сервінгу vLLM' },
   { src: 'Anthropic, Multi-agent research system', url: 'https://www.anthropic.com/engineering/multi-agent-research-system', got: 'оркестратор і пошукові підагенти' },
-  { src: 'Debenedetti та ін., CaMeL', url: 'https://arxiv.org/abs/2503.18813', got: 'два інтерпретатори і граф даних' }
+  { src: 'Debenedetti та ін., CaMeL', url: 'https://arxiv.org/abs/2503.18813', got: 'два інтерпретатори і граф даних' },
+  { src: 'Ainslie та ін., GQA', url: 'https://arxiv.org/abs/2305.13245', got: 'multi-head, grouped-query і multi-query' },
+  { src: 'Sumers та ін., CoALA', url: 'https://arxiv.org/abs/2309.02427', got: 'чотири типи памʼяті агента' },
+  { src: 'Greshake та ін., Indirect Prompt Injection', url: 'https://arxiv.org/abs/2302.12173', got: 'ланцюг непрямої ін\'єкції' }
 ]
 
 const LIT = [
