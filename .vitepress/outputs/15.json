@@ -1,1 +1,16 @@
-{}
+{
+ "b6c2d8efab9a": {
+  "out": "кроків: 3, знахідок: 3\n2ae0a165 3\ncbb7a441 2\n72fec93a 1\n44dc8b3e 0\n847cb3fb None\n",
+  "python": "3.14.0",
+  "ran": "2026-09-25",
+  "sec": 3.6,
+  "status": "ok"
+ },
+ "fa2c1509d560": {
+  "out": "шлях: route → retrieve → draft → check → approve → answer · кроків: 6\n",
+  "python": "3.14.0",
+  "ran": "2026-09-25",
+  "sec": 3.3,
+  "status": "ok"
+ }
+}
