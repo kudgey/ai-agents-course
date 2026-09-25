@@ -732,3 +732,42 @@ html.uk-pres .uk-figure__frame img {
 /* сітки віджетів не мають розповзатися ширше за колонку */
 .lab > div,
 .lab section { min-width: 0; }
+
+/* ─────────────────────────────────────────────────────────────────────
+   Телефон (≤720 px): нічого не розтягує сторінку вбік.
+   Тема ставить таблицям display:table і overflow-x:hidden, через що
+   штатна обгортка VitePress із прокруткою не працює — повертаємо її.
+   ───────────────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .vp-doc table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    font-size: 0.86rem;
+  }
+  .vp-doc table th,
+  .vp-doc table td { min-width: 7.5rem; }
+
+  /* довга формула прокручується всередині себе */
+  .vp-doc mjx-container[display="true"] {
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+  }
+
+  .vp-doc svg,
+  .vp-doc img { max-width: 100%; height: auto; }
+
+  /* двоколонкові сітки віджетів: мінімуми колонок не влазять у 375 px */
+  .lab [class$="__grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.9rem;
+  }
+  .lab [class$="__grid"] > * { min-width: 0; }
+
+  /* поля з перемикачами: дозволяємо переносити рядок */
+  .lab label { flex-wrap: wrap; }
+  .lab pre,
+  .lab [class$="__code"] { overflow-x: auto; max-width: 100%; }
+}
