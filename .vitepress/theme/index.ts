@@ -33,6 +33,7 @@ import Compare from './components/Compare.vue'
 import Timeline from './components/Timeline.vue'
 import Resources from './components/Resources.vue'
 import RunOutput from './components/RunOutput.vue'
+import CodeFold from './components/CodeFold.vue'
 import CourseHome from './components/CourseHome.vue'
 
 export default {
@@ -72,6 +73,7 @@ export default {
     app.component('Timeline', Timeline)
     app.component('Resources', Resources)
     app.component('RunOutput', RunOutput)
+    app.component('CodeFold', CodeFold)
     app.component('CourseHome', CourseHome)
   },
 } satisfies Theme
