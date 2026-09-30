@@ -51,7 +51,8 @@ const rayB = computed(() => {
       </div>
     </div>
 
-    <table class="cl__matrix">
+    <div class="cl__scroll">
+      <table class="cl__matrix">
       <thead>
         <tr>
           <th>Слово</th>
@@ -70,7 +71,8 @@ const rayB = computed(() => {
           </td>
         </tr>
       </tbody>
-    </table>
+      </table>
+    </div>
 
     <div class="cl__grid">
       <svg viewBox="0 0 240 180" class="cl__viz" role="img" aria-label="Кут між векторами">
@@ -129,6 +131,7 @@ const rayB = computed(() => {
 </template>
 
 <style scoped>
+.cl__scroll { overflow-x: auto; }   /* сім колонок чисел не стискаються нижче своєї ширини */
 .cl__matrix {
   width: 100%;
   border-collapse: collapse;
@@ -218,5 +221,6 @@ const rayB = computed(() => {
 }
 @media (max-width: 700px) {
   .cl__grid { grid-template-columns: 1fr; }
+  .cl__matrix { min-width: 25rem; }   /* вужче числа злипаються — краще прокрутка */
 }
 </style>
