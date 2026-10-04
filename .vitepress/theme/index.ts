@@ -38,6 +38,7 @@ import ContextBudget from './components/ContextBudget.vue'
 import PPOClipLab from './components/PPOClipLab.vue'
 import DPOLab from './components/DPOLab.vue'
 import TrainingPipelineLab from './components/TrainingPipelineLab.vue'
+import ShotLab from './components/ShotLab.vue'
 import CourseHome from './components/CourseHome.vue'
 
 export default {
@@ -82,6 +83,7 @@ export default {
     app.component('PPOClipLab', PPOClipLab)
     app.component('DPOLab', DPOLab)
     app.component('TrainingPipelineLab', TrainingPipelineLab)
+    app.component('ShotLab', ShotLab)
     app.component('CourseHome', CourseHome)
   },
 } satisfies Theme
