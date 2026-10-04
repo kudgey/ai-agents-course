@@ -120,7 +120,7 @@ function preset(t: number, k: number, p: number) {
     <div class="sl__controls">
       <label class="sl__ctl">
         <span>Температура <b>τ = {{ temperature.toFixed(2) }}</b></span>
-        <input v-model.number="temperature" type="range" min="0.05" max="2" step="0.05" />
+        <input v-model.number="temperature" type="range" min="0.05" max="5" step="0.05" />
       </label>
       <label class="sl__ctl">
         <span>Top-k <b>k = {{ topK }}</b></span>

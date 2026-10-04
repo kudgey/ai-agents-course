@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
- * L(N, D) = 406.4/N^0.34 + 410.7/D^0.28 + 1.69 — формула зі слайда (Hoffmann та ін.).
- * Крива будується наживо, видно, як обидва доданки впираються в незнижуваний 1.69.
+ * L(N, D) = 406.4/N^0.34 + 410.7/D^0.28 + 1.69 (Hoffmann та ін.).
+ * Крива — це L(N) при фіксованому D, тому вона виходить не на 1.69, а на
+ * 1.69 + 410.7/D^0.28: межу задає і сама задача, і обсяг даних.
  */
 import { ref, computed } from 'vue'
 
@@ -63,7 +64,7 @@ function human(n: number) {
       <div>
         <div class="lab__title">Закон масштабування наживо</div>
         <div class="lab__sub">
-          Та сама формула, що на слайді. Крутіть розмір моделі й обсяг даних — і дивіться,
+          Та сама формула, що вище. Крутіть розмір моделі й обсяг даних — і дивіться,
           який доданок насправді тримає втрати.
         </div>
       </div>
@@ -91,7 +92,7 @@ function human(n: number) {
       <circle :cx="dotX" :cy="dotY" r="5" fill="var(--uk-accent)" stroke="var(--vp-c-bg)" stroke-width="2" />
       <text :x="PAD - 4" y="14" font-size="9" text-anchor="end" fill="var(--vp-c-text-3)">5.2</text>
       <text :x="PAD - 4" :y="yFloor + 3" font-size="9" text-anchor="end" fill="var(--uk-warm)">1.69</text>
-      <text :x="W - 12" :y="yFloor - 5" font-size="8.5" text-anchor="end" fill="var(--uk-warm)">незнижуваний доданок</text>
+      <text :x="W - 12" :y="yFloor - 5" font-size="8.5" text-anchor="end" fill="var(--uk-warm)">межа E, дані нескінченні</text>
       <text :x="PAD" :y="H - 8" font-size="9" fill="var(--vp-c-text-3)">10⁷</text>
       <text :x="W - 10" :y="H - 8" font-size="9" text-anchor="end" fill="var(--vp-c-text-3)">10¹² параметрів</text>
     </svg>
