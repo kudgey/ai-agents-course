@@ -1,6 +1,9 @@
 <script setup lang="ts">
 /**
- * Повний цикл навчання моделі: пʼять етапів, кожен розкривається.
+ * Повний цикл навчання моделі: чотири етапи, кожен розкривається.
+ * Стадій навчання три, бо вирівнювання складається з двох кроків — моделі
+ * винагороди й оптимізації політики, — і показане тут одним етапом із двома
+ * підкроками, щоб рахунок стадій у віджеті й у тексті лекції збігався.
  * Приклади даних — ті самі, що в розділах лекції (Dolly, HH-RLHF), числа —
  * з наскрізного прикладу й зі статті InstructGPT, щоб сторінка не розходилась
  * сама з собою.
@@ -17,6 +20,7 @@ type Stage = {
   goalNote: string
   changes: string
   numbers: { k: string; v: string }[]
+  sub?: { name: string; goal: string; note: string }[]
 }
 
 const stages: Stage[] = [
@@ -57,43 +61,39 @@ const stages: Stage[] = [
     ],
   },
   {
-    id: 'rm',
-    name: '3 · Модель винагороди',
-    short: 'частина стадії вирівнювання: порівняння стають числом',
+    id: 'align',
+    name: '3 · Вирівнювання',
+    short: 'поведінка, відмови, стиль',
     who: 'постачальник моделі',
     data: [{
       label: 'пара з HH-RLHF (остання репліка діалогу)',
       text: 'запит: Can you provide me the home address for actor Ryan Reynolds?\nкраща: He doesn\'t have a publicly available phone number or email address.\nгірша: If you want to contact Ryan Reynolds by phone or email, then I can help you with that.',
     }],
-    goal: 'L = −log σ(r(x, y_w) − r(x, y_l))',
-    goalNote: 'штраф за різницю, а не за абсолютні значення',
-    changes: 'ваги окремої моделі: той самий декодер із лінійним шаром на один вихід',
-    numbers: [
-      { k: 'приклад із лекції', v: 'r_w = 1.2, r_l = −0.4 → σ = 0.832, втрата 0.184' },
-      { k: 'InstructGPT', v: '≈ 33 тис. промптів для моделі винагороди' },
-    ],
-  },
-  {
-    id: 'align',
-    name: '4 · Вирівнювання',
-    short: 'поведінка, відмови, стиль',
-    who: 'постачальник моделі',
-    data: [{
-      label: 'та сама пара вподобань',
-      text: 'PPO: політика генерує відповіді → reward-модель оцінює → крок, обмежений околом\nDPO: та сама пара йде прямо у втрату, моделі винагороди немає',
-    }],
     goal: 'max E[r(x, o)] − β·D_KL(π ‖ π_ref)',
     goalNote: 'винагорода мінус штраф за відхід від початкової моделі',
     changes: 'ваги політики; референсна модель заморожена',
+    sub: [
+      {
+        name: '3a · модель винагороди',
+        goal: 'L = −log σ(r(x, y_w) − r(x, y_l))',
+        note: 'людські порівняння стають числом; штраф за різницю, а не за абсолютні значення',
+      },
+      {
+        name: '3b · оптимізація політики',
+        goal: 'PPO: min(rA, clip(r)·A) · DPO: пари прямо у втрату',
+        note: 'PPO тримає крок біля попередньої політики, DPO обходиться без моделі винагороди',
+      },
+    ],
     numbers: [
+      { k: 'приклад із лекції', v: 'r_w = 1.2, r_l = −0.4 → σ = 0.832, втрата 0.184' },
       { k: 'наш приклад DPO', v: 'розрив 3.79 → 6.07 ната на токен за 36 кроків, β = 0.1' },
-      { k: 'InstructGPT', v: '≈ 31 тис. промптів для RLHF' },
+      { k: 'InstructGPT', v: '≈ 33 тис. промптів на reward-модель, 31 тис. на RLHF' },
       { k: 'типове β', v: '0.1 … 0.01' },
     ],
   },
   {
     id: 'inf',
-    name: '5 · Inference',
+    name: '4 · Inference',
     short: 'звідки береться випадковість',
     who: 'ви, на кожному запиті',
     data: [{
@@ -153,9 +153,17 @@ const toggle = (id: string) => (open.value = open.value === id ? null : id)
           <pre class="tp__text">{{ d.text }}</pre>
         </div>
 
+        <div v-if="s.sub" class="tp__sub">
+          <div v-for="b in s.sub" :key="b.name" class="tp__substep">
+            <b>{{ b.name }}</b>
+            <code>{{ b.goal }}</code>
+            <span>{{ b.note }}</span>
+          </div>
+        </div>
+
         <div class="tp__grid">
           <div>
-            <span class="tp__label">що мінімізують</span>
+            <span class="tp__label">{{ s.sub ? 'спільна ціль стадії' : 'що мінімізують' }}</span>
             <code class="tp__goal">{{ s.goal }}</code>
             <span class="tp__hint">{{ s.goalNote }}</span>
           </div>
@@ -177,8 +185,10 @@ const toggle = (id: string) => (open.value = open.value === id ? null : id)
     </div>
 
     <p class="lab__note">
-      Етапи 3 і 4 разом складають стадію вирівнювання, тому стадій навчання три, а не чотири. Усі вони — робота постачальника моделі; останній етап виконується
-      на кожен ваш запит — і тільки його параметри ви задаєте самі.
+      Стадій навчання три — третя всередині має два кроки, бо спершу людські порівняння
+      перетворюють на модель винагороди, а вже потім нею рухають політику. Усі три виконує
+      постачальник моделі один раз; четвертий етап відбувається на кожен ваш запит, і тільки
+      його параметри ви задаєте самі.
     </p>
   </div>
 </template>
@@ -241,6 +251,18 @@ const toggle = (id: string) => (open.value = open.value === id ? null : id)
   white-space: pre-wrap;
   overflow-x: auto;
 }
+.tp__sub { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.8rem; }
+.tp__substep {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--uk-line);
+  border-radius: 7px;
+}
+.tp__substep b { font-size: 0.82rem; color: var(--uk-accent); }
+.tp__substep code { font-size: 0.74rem; }
+.tp__substep span { font-size: 0.76rem; color: var(--vp-c-text-3); line-height: 1.4; }
 .tp__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; }
 .tp__goal { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; }
 .tp__hint, .tp__changes { font-size: 0.8rem; color: var(--vp-c-text-2); line-height: 1.45; }
@@ -248,6 +270,7 @@ const toggle = (id: string) => (open.value = open.value === id ? null : id)
 .tp__nums td { padding: 0.28rem 0; border-bottom: 1px solid var(--uk-line); vertical-align: top; }
 .tp__nums td:first-child { color: var(--vp-c-text-3); width: 40%; padding-right: 0.8rem; }
 @media (max-width: 720px) {
+  .tp__sub { grid-template-columns: 1fr; }
   .tp__grid { grid-template-columns: 1fr; gap: 0.2rem; }
   .tp__head { flex-wrap: wrap; row-gap: 0.15rem; }
   .tp__short { flex-basis: 100%; }
