@@ -3,9 +3,9 @@
  * Шість складових промпта: вимикайте частини й дивіться, що лишається моделі
  * і що саме зламається без цієї частини.
  */
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
-const PARTS = [
+const STUDY = [
   {
     id: 'role',
     name: 'Роль і системна частина',
@@ -50,12 +50,70 @@ const PARTS = [
   },
 ]
 
-const on = ref<Record<string, boolean>>(
-  Object.fromEntries(PARTS.map((p) => [p.id, true]))
-)
+// той самий розклад на шість частин, але на бізнес-задачі: підтримка
+// інтернет-магазину вирішує, чи підлягає замовлення поверненню
+const SHOP = [
+  {
+    id: 'role',
+    name: 'Роль і системна частина',
+    sets: 'межі й контекст задачі',
+    without: 'стиль добирає модель',
+    text: 'Ти асистент підтримки інтернет-магазину. Рішення про повернення ухвалюєш лише за наданою\nполітикою й даними замовлення. Власних винятків не вигадуєш і знижок не обіцяєш.',
+  },
+  {
+    id: 'instr',
+    name: 'Інструкція',
+    sets: 'що саме зробити',
+    without: 'відповідь не на те',
+    text: 'Визнач, чи підлягає замовлення поверненню, і назви пункт політики, на якому ґрунтується рішення.',
+  },
+  {
+    id: 'examples',
+    name: 'Приклади',
+    sets: 'шаблон входу й виходу',
+    without: 'розкид форми',
+    text: 'Приклад:\nЗамовлення: навушники, 12 днів тому, упаковку відкрито\nВідповідь: {"eligible": true, "clause": "3.1", "refund": 2400, "escalate": false}',
+  },
+  {
+    id: 'data',
+    name: 'Дані',
+    sets: 'матеріал для відповіді',
+    without: 'відповідь із ваг',
+    text: '<policy>\n3.1 Повернення приймається протягом 14 днів з моменту доставки.\n3.4 Товари з розділу «Гігієна» поверненню не підлягають.\n</policy>\n<order>\nелектрична зубна щітка, розділ «Гігієна», доставлено 9 днів тому, 1890 грн\n</order>',
+  },
+  {
+    id: 'format',
+    name: 'Формат виводу',
+    sets: 'контракт для коду',
+    without: 'парсер падає',
+    text: 'Поверни рівно один JSON-обʼєкт із полями eligible, clause, refund, escalate. Без тексту поза JSON.',
+  },
+  {
+    id: 'stop',
+    name: 'Критерій зупинки',
+    sets: 'коли відповідь готова',
+    without: 'текст без кінця',
+    text: 'Якщо політика не покриває випадок, поверни escalate: true і не вигадуй рішення.',
+  },
+]
 
-const kept = computed(() => PARTS.filter((p) => on.value[p.id]))
-const dropped = computed(() => PARTS.filter((p) => !on.value[p.id]))
+const CASES = [
+  { id: 'study', label: 'Навчальний відділ', parts: STUDY },
+  { id: 'shop', label: 'Підтримка магазину', parts: SHOP },
+]
+const caseId = ref('study')
+const PARTS = computed(() => CASES.find((c) => c.id === caseId.value)!.parts)
+
+const on = ref<Record<string, boolean>>(
+  Object.fromEntries(STUDY.map((p) => [p.id, true]))
+)
+// перемикання сценарію не має лишати частини вимкненими від попереднього
+watch(caseId, () => {
+  for (const p of PARTS.value) on.value[p.id] = true
+})
+
+const kept = computed(() => PARTS.value.filter((p) => on.value[p.id]))
+const dropped = computed(() => PARTS.value.filter((p) => !on.value[p.id]))
 
 const prompt = computed(() => kept.value.map((p) => p.text).join('\n\n'))
 
@@ -80,6 +138,19 @@ const risk = computed(() => {
       <button class="lab__btn" @click="PARTS.forEach((p) => (on[p.id] = true))">Повернути все</button>
     </div>
 
+    <div class="pa__cases">
+      <button
+        v-for="c in CASES"
+        :key="c.id"
+        type="button"
+        class="pa__case"
+        :class="{ 'is-on': caseId === c.id }"
+        @click="caseId = c.id"
+      >
+        {{ c.label }}
+      </button>
+    </div>
+
     <div class="pa__grid">
       <div class="pa__list">
         <label v-for="p in PARTS" :key="p.id" class="pa__part" :class="{ 'is-off': !on[p.id] }">
@@ -100,14 +171,27 @@ const risk = computed(() => {
     </div>
 
     <p class="lab__note">
-      Критерій зупинки задається таким самим текстом, як і решта: у RAG-шаблонах це прямий
-      дозвіл відмовитися. Приберіть його — і модель, не знайшовши підстав, усе одно
-      щось відповість, бо нічого не дозволяло їй промовчати.
+      Переконайтеся, що розклад не залежить від теми: навчальний відділ і підтримка
+      магазину — різні задачі, а частини однакові. У другому сценарії дані навмисно
+      суперечливі: замовлення вкладається в чотирнадцять днів за пунктом 3.1, але
+      належить до розділу «Гігієна» за пунктом 3.4. Приберіть критерій зупинки — і
+      модель, не маючи дозволу передати випадок людині, усе одно ухвалить рішення сама.
     </p>
   </div>
 </template>
 
 <style scoped>
+.pa__cases { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; }
+.pa__case {
+  padding: 0.32rem 0.8rem;
+  border: 1px solid var(--uk-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--vp-c-text-3);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.pa__case.is-on { border-color: var(--uk-accent); color: var(--uk-accent); font-weight: 600; }
 .pa__grid { display: grid; grid-template-columns: minmax(230px, 0.85fr) minmax(280px, 1.15fr); gap: 1.2rem; }
 .pa__list { display: flex; flex-direction: column; gap: 0.3rem; }
 .pa__part {
