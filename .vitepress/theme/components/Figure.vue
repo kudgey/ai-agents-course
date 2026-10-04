@@ -2,11 +2,15 @@
 import { ref, onUnmounted, computed } from 'vue'
 import { withBase } from 'vitepress'
 
-const props = defineProps<{ src: string; alt?: string }>()
+const props = defineProps<{ src: string; alt?: string; mobile?: string }>()
 
 // Сайт може жити в підкаталозі (GitHub Pages), тому абсолютний шлях
 // до картинки треба пропустити через withBase, інакше буде 404.
 const href = computed(() => withBase(props.src))
+// Широка схема на 375 px стискається до 288 px, і підписи в ній стають
+// нечитабельними. Якщо поруч лежить вертикальна версія, на вузькому екрані
+// показуємо її; збільшення за кліком завжди відкриває повну.
+const mobileHref = computed(() => (props.mobile ? withBase(props.mobile) : null))
 
 const zoomed = ref<string | null>(null)
 
@@ -27,7 +31,10 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
 <template>
   <figure class="uk-figure">
     <div class="uk-figure__frame" @click="open(href)" :title="'Збільшити: ' + (alt || '')">
-      <img :src="href" :alt="alt" loading="lazy" />
+      <picture>
+        <source v-if="mobileHref" :srcset="mobileHref" media="(max-width: 720px)" />
+        <img :src="href" :alt="alt" loading="lazy" />
+      </picture>
     </div>
     <figcaption class="uk-figure__caption">
       <slot />
