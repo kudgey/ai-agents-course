@@ -22,7 +22,30 @@ const windows = [
 ]
 const win = ref(8192)
 
-const used = computed(() => parts.value.reduce((s, p) => s + p.v, 0))
+// механізми з розділу вище: кожен зменшує свій доданок, нічого не прибираючи
+// з задачі — це обмін повноти на місце, а не безкоштовна економія
+const MECHS = [
+  { id: 'lazy', name: 'Підвантаження за потреби', key: 'n_res', to: 0.08,
+    cost: 'зайвий крок і виклик інструмента на кожне звернення' },
+  { id: 'compact', name: 'Компакція історії', key: 'n_hist', to: 0.05,
+    cost: 'деталі, яких у підсумку не стало' },
+  { id: 'notes', name: 'Нотатки назовні', key: 'n_mem', to: 0.1,
+    cost: 'нотатка може застаріти або бути отруєна' },
+  { id: 'defer', name: 'Відкладені описи інструментів', key: 'n_tools', to: 0.15,
+    cost: 'схема підвантажується при першому виклику' },
+]
+const on = ref<Record<string, boolean>>({})
+
+const effective = computed(() =>
+  parts.value.map((p) => {
+    const m = MECHS.find((x) => x.key === p.key && on.value[x.id])
+    return { ...p, v: m ? Math.round(p.v * m.to) : p.v, cut: !!m }
+  }))
+const saved = computed(
+  () => parts.value.reduce((s, p) => s + p.v, 0) - effective.value.reduce((s, p) => s + p.v, 0))
+const applied = computed(() => MECHS.filter((m) => on.value[m.id]))
+
+const used = computed(() => effective.value.reduce((s, p) => s + p.v, 0))
 const share = computed(() => used.value / win.value)
 const free = computed(() => Math.max(0, win.value - used.value))
 const threshold = computed(() => Math.round(0.7 * win.value))
@@ -57,10 +80,23 @@ const fmt = (n: number) => n.toLocaleString('uk-UA').replace(/ /g, ' ')
       </div>
     </div>
 
+    <div class="cb__mechs">
+      <button
+        v-for="m in MECHS"
+        :key="m.id"
+        type="button"
+        class="cb__mech"
+        :class="{ 'is-on': on[m.id] }"
+        @click="on[m.id] = !on[m.id]"
+      >
+        {{ on[m.id] ? '✓ ' : '+ ' }}{{ m.name }}
+      </button>
+    </div>
+
     <div class="cb__scale"><span class="cb__rholab">поріг компакції 0.7</span></div>
     <div class="cb__bar" role="img" :aria-label="`зайнято ${fmt(used)} з ${fmt(win)} токенів`">
       <span
-        v-for="(p, i) in parts"
+        v-for="(p, i) in effective"
         :key="p.key"
         class="cb__seg"
         :class="'is-' + i"
@@ -74,7 +110,8 @@ const fmt = (n: number) => n.toLocaleString('uk-UA').replace(/ /g, ' ')
       <label v-for="p in parts" :key="p.key" class="lab__ctl cb__ctl">
         <span class="cb__name"><i class="cb__dot" :class="'is-' + parts.indexOf(p)" />{{ p.name }}</span>
         <input v-model.number="p.v" type="range" min="0" :max="p.max" step="50" />
-        <code>{{ fmt(p.v) }}</code>
+        <code :class="{ 'is-cut': effective[parts.indexOf(p)].cut }">{{
+          fmt(effective[parts.indexOf(p)].v) }}</code>
       </label>
     </div>
 
@@ -86,7 +123,10 @@ const fmt = (n: number) => n.toLocaleString('uk-UA').replace(/ /g, ' ')
       <div class="lab__stat" :class="{ 'is-warm': free === 0 }">
         <b>{{ fmt(free) }}</b><span>лишилось під відповідь</span>
       </div>
-      <div class="lab__stat is-green"><b>{{ cost.toFixed(1) }}×</b><span>вартість уваги проти 1k</span></div>
+      <div class="lab__stat" :class="saved ? 'is-green' : ''">
+        <b>{{ saved ? '−' + fmt(saved) : cost.toFixed(1) + '×' }}</b>
+        <span>{{ saved ? 'зекономлено механізмами' : 'вартість уваги проти 1k' }}</span>
+      </div>
     </div>
 
     <p class="lab__note">
@@ -98,13 +138,32 @@ const fmt = (n: number) => n.toLocaleString('uk-UA').replace(/ /g, ' ')
         До порога компакції ({{ fmt(threshold) }} токенів, тобто 0.7 вікна)
         лишається {{ fmt(threshold - used) }}.
       </template>
-      Вартість уваги росте як квадрат довжини: подвоєння з 8k до 16k — це
-      вчетверо, а з 4k до 32k — у 64 рази.
+      <template v-if="applied.length">
+        Увімкнено механізмів: {{ applied.length }}. Місце звільнилося, але щось
+        віддано натомість — {{ applied.map((m) => m.cost).join('; ') }}.
+      </template>
+      <template v-else>
+        Вартість уваги росте як квадрат довжини: подвоєння з 8k до 16k — це
+        вчетверо, а з 4k до 32k — у 64 рази. Увімкніть механізм вище, щоб
+        побачити, скільки місця він звільняє і чим за це платить.
+      </template>
     </p>
   </div>
 </template>
 
 <style scoped>
+.cb__mechs { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.9rem 0 1rem; }
+.cb__mech {
+  padding: 0.26rem 0.65rem;
+  border: 1px solid var(--uk-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--vp-c-text-3);
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+.cb__mech.is-on { border-color: var(--uk-green); color: var(--uk-green); font-weight: 600; }
+.lab__ctl code.is-cut { color: var(--uk-green); font-weight: 700; }
 .cb__win { display: flex; gap: 0.3rem; flex: none; }
 .cb__wbtn {
   font-family: var(--vp-font-family-mono);
