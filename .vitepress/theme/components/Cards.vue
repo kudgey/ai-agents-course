@@ -1,16 +1,21 @@
 <script setup lang="ts">
 /**
  * Таблиця «поняття → пояснення» у вигляді сітки карток.
- * Джерело те саме, що йде в Gamma: у `.src.md` це звичайна markdown-таблиця,
- * загорнута маркером ::: cards. Жодне слово не втрачається.
+ * У `.src.md` це звичайна markdown-таблиця, загорнута маркером ::: cards.
+ *
+ * Назви колонок (head) показуються підписами всередині кожної картки: інакше
+ * сітка з трьох колонок читається як два безіменні тексти, і сенс другої та
+ * третьої колонки доводиться вгадувати. Підписи видно й на телефоні, де
+ * жодна спільна шапка не помістилася б.
  */
 withDefaults(
   defineProps<{
     items: { k: string; v: string; extra?: string }[]
+    head?: string[]
     accent?: 'accent' | 'warm' | 'green'
     numbered?: boolean
   }>(),
-  { accent: 'accent', numbered: false }
+  { head: () => [], accent: 'accent', numbered: false }
 )
 </script>
 
@@ -20,7 +25,9 @@ withDefaults(
       <span v-if="numbered" class="cds__n">{{ i + 1 }}</span>
       <div class="cds__body">
         <b class="cds__k" v-html="it.k" />
+        <span v-if="head[1] && it.v" class="cds__lab">{{ head[1] }}</span>
         <span class="cds__v" v-html="it.v" />
+        <span v-if="head[2] && it.extra" class="cds__lab">{{ head[2] }}</span>
         <span v-if="it.extra" class="cds__extra" v-html="it.extra" />
       </div>
     </div>
@@ -70,6 +77,15 @@ withDefaults(
 .cds__body { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
 .cds__k { font-size: 0.9rem; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
 .cds__v { font-size: 0.83rem; line-height: 1.5; color: var(--vp-c-text-2); }
+.cds__lab {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-3);
+  margin-top: 0.3rem;
+}
+.cds__lab:first-of-type { margin-top: 0.15rem; }
 .cds__extra {
   font-size: 0.76rem;
   line-height: 1.45;

@@ -24,8 +24,14 @@ const twoCol = computed(() => props.head.filter(Boolean).length === 2)
     </div>
     <div v-for="(it, i) in items" :key="i" class="cmp__row">
       <span v-if="!twoCol" class="cmp__label" v-html="it.k" />
-      <span class="cmp__cell is-a" v-html="twoCol ? it.k : it.v" />
-      <span class="cmp__cell is-b" v-html="twoCol ? it.v : it.extra" />
+      <span class="cmp__cell is-a">
+        <em class="cmp__m">{{ twoCol ? head[0] : head[1] }}</em>
+        <span v-html="twoCol ? it.k : it.v" />
+      </span>
+      <span class="cmp__cell is-b">
+        <em class="cmp__m">{{ twoCol ? head[1] : head[2] }}</em>
+        <span v-html="twoCol ? it.v : it.extra" />
+      </span>
     </div>
   </div>
 </template>
@@ -53,10 +59,21 @@ const twoCol = computed(() => props.head.filter(Boolean).length === 2)
 .cmp.is-two .cmp__heads,
 .cmp.is-two .cmp__row { grid-template-columns: 1fr 1fr; }
 .cmp.is-two .cmp__cell.is-a { font-weight: 500; }
+.cmp__m { display: none; font-style: normal; }
 @media (max-width: 620px) {
+  /* спільна шапка в три колонки не вміщається, тому назву сторони
+     показуємо в самій клітинці — заголовки лишаються видимими */
   .cmp__heads { display: none; }
+  .cmp__m {
+    display: block;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .cmp__cell.is-a .cmp__m { color: var(--uk-accent); }
+  .cmp__cell.is-b .cmp__m { color: var(--uk-warm); }
   .cmp__row { grid-template-columns: 1fr; gap: 0.2rem; }
-  .cmp__cell.is-a::before { content: '▸ '; color: var(--uk-accent); }
-  .cmp__cell.is-b::before { content: '▸ '; color: var(--uk-warm); }
+
 }
 </style>
