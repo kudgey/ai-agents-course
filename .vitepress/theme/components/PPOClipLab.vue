@@ -15,7 +15,13 @@ const plain = computed(() => ratio.value * adv.value)
 const clippedObj = computed(() => clipped.value * adv.value)
 const objective = computed(() => Math.min(plain.value, clippedObj.value))
 const inside = computed(() => Math.abs(ratio.value - 1) <= eps.value + 1e-9)
-const frozen = computed(() => !inside.value && Math.abs(objective.value - clippedObj.value) < 1e-9)
+// обрізання діє лише тоді, коли мінімум справді вибрав обрізаний доданок:
+// у «песимістичному» напрямку (A>0 і r<1−ε, або A<0 і r>1+ε) воно крок не стримує
+const frozen = computed(
+  () => !inside.value && Math.abs(objective.value - clippedObj.value) < 1e-9)
+const state = computed(() => (inside.value ? 'inside' : frozen.value ? 'clipped' : 'free'))
+const stateLabel = computed(
+  () => ({ inside: 'в околі', clipped: 'обрізано', free: 'кліп не діє' })[state.value])
 
 // крива цілі по r при поточних A і ε
 const W = 420
@@ -85,20 +91,25 @@ const bandW = computed(() => ((2 * eps.value) / (R_MAX - R_MIN)) * (W - 40))
       <div class="lab__stat" :class="{ 'is-warm': frozen }">
         <b>{{ objective.toFixed(2) }}</b><span>ціль PPO</span>
       </div>
-      <div class="lab__stat" :class="inside ? 'is-green' : 'is-warm'">
-        <b>{{ inside ? 'в околі' : 'обрізано' }}</b><span>стан кроку</span>
+      <div class="lab__stat" :class="state === 'clipped' ? 'is-warm' : 'is-green'">
+        <b>{{ stateLabel }}</b><span>стан кроку</span>
       </div>
     </div>
 
     <p class="lab__note">
-      <template v-if="frozen">
-        Крок вийшов за околи: ціль упирається в {{ clippedObj.toFixed(2) }} і більше не
-        залежить від <code>r</code>. Градієнт по цій відповіді зник — політиці невигідно
-        стрибати далі.
-      </template>
-      <template v-else>
+      <template v-if="state === 'inside'">
         Крок усередині околу: ціль росте разом із <code>r</code>, і градієнт працює.
         Саме в цій смузі PPO й дозволяє політиці змінюватись.
+      </template>
+      <template v-else-if="state === 'clipped'">
+        Крок вийшов за околи в бік, вигідний політиці: ціль упирається
+        в {{ clippedObj.toFixed(2) }} і більше не залежить від <code>r</code>.
+        Градієнт по цій відповіді зник — стрибати далі невигідно.
+      </template>
+      <template v-else>
+        Крок вийшов за околи, але <b>в інший бік</b>: мінімум узяв необрізаний доданок
+        {{ plain.toFixed(2) }}. Обрізання тут не стримує нічого — воно заважає лише
+        надто вигідним крокам, а не надто обережним.
       </template>
     </p>
   </div>

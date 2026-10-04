@@ -16,7 +16,9 @@ const sigma = computed(() => 1 / (1 + Math.exp(-z.value)))
 const loss = computed(() => -Math.log(sigma.value))
 // похідна втрати по margin: β·σ(−z) — це й є сила градієнта на цій парі
 const grad = computed(() => beta.value * (1 - sigma.value))
-const strong = computed(() => grad.value < 0.01)
+// «вичерпана» пара — це та, де σ майже одиниця; абсолютний поріг на градієнт
+// був би хибним за малого β, де градієнт малий і на нерозведеній парі
+const strong = computed(() => sigma.value > 0.9)
 
 const W = 420
 const H = 140
