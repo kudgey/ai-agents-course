@@ -39,6 +39,7 @@ import PPOClipLab from './components/PPOClipLab.vue'
 import DPOLab from './components/DPOLab.vue'
 import TrainingPipelineLab from './components/TrainingPipelineLab.vue'
 import ShotLab from './components/ShotLab.vue'
+import PositionLab from './components/PositionLab.vue'
 import CourseHome from './components/CourseHome.vue'
 
 export default {
@@ -84,6 +85,7 @@ export default {
     app.component('DPOLab', DPOLab)
     app.component('TrainingPipelineLab', TrainingPipelineLab)
     app.component('ShotLab', ShotLab)
+    app.component('PositionLab', PositionLab)
     app.component('CourseHome', CourseHome)
   },
 } satisfies Theme
