@@ -25,21 +25,23 @@ const win = ref(8192)
 // механізми з розділу вище: кожен зменшує свій доданок, нічого не прибираючи
 // з задачі — це обмін повноти на місце, а не безкоштовна економія
 const MECHS = [
-  { id: 'lazy', name: 'Підвантаження за потреби', key: 'n_res', to: 0.08,
+  { id: 'lazy', name: 'Підвантаження за потреби', keys: { n_res: 0.08 },
     cost: 'зайвий крок і виклик інструмента на кожне звернення' },
-  { id: 'compact', name: 'Компакція історії', key: 'n_hist', to: 0.05,
+  { id: 'compact', name: 'Компакція історії', keys: { n_hist: 0.05 },
     cost: 'деталі, яких у підсумку не стало' },
-  { id: 'notes', name: 'Нотатки назовні', key: 'n_mem', to: 0.1,
+  { id: 'notes', name: 'Нотатки назовні', keys: { n_mem: 0.1 },
     cost: 'нотатка може застаріти або бути отруєна' },
-  { id: 'defer', name: 'Відкладені описи інструментів', key: 'n_tools', to: 0.15,
-    cost: 'схема підвантажується при першому виклику' },
+  { id: 'subagent', name: 'Субагенти', keys: { n_hist: 0.3, n_res: 0.3 },
+    cost: 'власне вікно на кожного й повторне читання тих самих джерел' },
 ]
 const on = ref<Record<string, boolean>>({})
 
+// кілька механізмів можуть різати той самий доданок — ефекти перемножуються
 const effective = computed(() =>
   parts.value.map((p) => {
-    const m = MECHS.find((x) => x.key === p.key && on.value[x.id])
-    return { ...p, v: m ? Math.round(p.v * m.to) : p.v, cut: !!m }
+    const f = MECHS.filter((m) => on.value[m.id] && m.keys[p.key as keyof typeof m.keys])
+      .reduce((acc, m) => acc * (m.keys[p.key as keyof typeof m.keys] as number), 1)
+    return { ...p, v: Math.round(p.v * f), cut: f < 1 }
   }))
 const saved = computed(
   () => parts.value.reduce((s, p) => s + p.v, 0) - effective.value.reduce((s, p) => s + p.v, 0))

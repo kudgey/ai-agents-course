@@ -10,14 +10,14 @@
 import { computed, ref } from 'vue'
 
 const MEASURED = [1, 5, 10, 15, 20]
-const SERIES: Record<string, number[]> = {
-  'GPT-3.5-Turbo': [75.8, 57.2, 53.8, 55.4, 63.2],
-  'Claude-1.3': [59.9, 55.9, 56.8, 57.2, 60.1],
-  'LongChat-13B (16K)': [68.6, 57.4, 55.3, 52.5, 55.0],
-  'MPT-30B-Instruct': [53.7, 51.8, 52.2, 52.7, 56.3],
+// точність за позицією — таблиця додатка «20 Total Retrieved Documents»;
+// межі closed-book і oracle — таблиця 1 тієї самої статті, у кожної моделі свої
+const SERIES: Record<string, { acc: number[]; noDoc: number; onlyDoc: number }> = {
+  'GPT-3.5-Turbo': { acc: [75.8, 57.2, 53.8, 55.4, 63.2], noDoc: 56.1, onlyDoc: 88.3 },
+  'Claude-1.3': { acc: [59.9, 55.9, 56.8, 57.2, 60.1], noDoc: 48.3, onlyDoc: 76.1 },
+  'LongChat-13B (16K)': { acc: [68.6, 57.4, 55.3, 52.5, 55.0], noDoc: 35.0, onlyDoc: 83.4 },
+  'MPT-30B-Instruct': { acc: [53.7, 51.8, 52.2, 52.7, 56.3], noDoc: 31.5, onlyDoc: 81.9 },
 }
-const NO_DOC = 56.1   // GPT-3.5-Turbo без жодного документа
-const ONLY_DOC = 88.3 // лише правильний документ
 
 const model = ref('GPT-3.5-Turbo')
 const pos = ref(10)
@@ -30,10 +30,13 @@ const nearestIdx = computed(() => {
   })
   return best
 })
-const acc = computed(() => SERIES[model.value][nearestIdx.value])
+const cur = computed(() => SERIES[model.value])
+const acc = computed(() => cur.value.acc[nearestIdx.value])
+const noDoc = computed(() => cur.value.noDoc)
+const onlyDoc = computed(() => cur.value.onlyDoc)
 const exact = computed(() => MEASURED.includes(pos.value))
-const vsNoDoc = computed(() => acc.value - NO_DOC)
-const best = computed(() => Math.max(...SERIES[model.value]))
+const vsNoDoc = computed(() => acc.value - noDoc.value)
+const best = computed(() => Math.max(...cur.value.acc))
 </script>
 
 <template>
@@ -83,24 +86,24 @@ const best = computed(() => Math.max(...SERIES[model.value]))
     </label>
 
     <div class="lab__stats">
-      <div class="lab__stat" :class="acc < NO_DOC ? 'is-warm' : 'is-green'">
+      <div class="lab__stat" :class="acc < noDoc ? 'is-warm' : 'is-green'">
         <b>{{ acc.toFixed(1) }} %</b><span>точність{{ exact ? '' : ' (найближчий вимір)' }}</span>
       </div>
-      <div class="lab__stat"><b>{{ NO_DOC }} %</b><span>без жодного документа</span></div>
-      <div class="lab__stat"><b>{{ ONLY_DOC }} %</b><span>лише правильний документ</span></div>
-      <div class="lab__stat"><b>{{ (best - Math.min(...SERIES[model])).toFixed(1) }}</b>
+      <div class="lab__stat"><b>{{ noDoc }} %</b><span>без жодного документа</span></div>
+      <div class="lab__stat"><b>{{ onlyDoc }} %</b><span>лише правильний документ</span></div>
+      <div class="lab__stat"><b>{{ (best - Math.min(...cur.acc)).toFixed(1) }}</b>
         <span>розкид по позиціях, в.п.</span></div>
     </div>
 
     <p class="lab__note">
-      <template v-if="model === 'GPT-3.5-Turbo' && vsNoDoc < 0">
+      <template v-if="vsNoDoc < 0">
         Ось головне цієї лекції в одному числі: з потрібним документом у середині вікна
         модель відповідає <b>гірше</b> ({{ acc.toFixed(1) }} %), ніж узагалі без документів
-        ({{ NO_DOC }} %). Документ витратив бюджет і не допоміг.
+        ({{ noDoc }} %). Документ витратив бюджет і не допоміг.
       </template>
       <template v-else-if="exact">
         Позиція {{ pos }} — одна з пʼяти виміряних у статті. Межі зверху й знизу взяті
-        з таблиці 1 тієї самої роботи й стосуються GPT-3.5-Turbo.
+        з таблиці 1 тієї самої роботи й стосуються саме цієї моделі.
       </template>
       <template v-else>
         Точність виміряна для позицій 1, 5, 10, 15 і 20; для проміжних показано
