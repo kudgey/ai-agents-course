@@ -73,7 +73,11 @@ const entropy = computed(() => {
 
 const poolSize = computed(() => result.value.filter((d) => d.kept).length)
 
-const isGreedy = computed(() => poolSize.value === 1 || temperature.value <= 0.05)
+// greedy — це коли вибір фактично визначений, а не коли температура мала:
+// при t = 0.05 і k = 5 розподіл ще дає cute 0.77 / on 0.23, тобто кожен
+// четвертий розіграш поверне інший токен (виміряно 04.10.2026)
+const isGreedy = computed(
+  () => poolSize.value === 1 || Math.max(...result.value.map((d) => d.final)) >= 0.999)
 
 function roll(times = 100) {
   rolling.value = true
@@ -111,7 +115,7 @@ function preset(t: number, k: number, p: number) {
   <div class="sl">
     <div class="sl__head">
       <div>
-        <div class="sl__title">Один крок генерації, чотири рішення</div>
+        <div class="sl__title">Один крок генерації, три способи відсікання</div>
         <div class="sl__sub">
           <template v-if="props.context === 'table'">
             Розподіл — той самий, що в таблиці вище. Крутіть ручки й дивіться, хто лишається в пулі.
@@ -126,7 +130,7 @@ function preset(t: number, k: number, p: number) {
     </div>
 
     <div class="sl__presets">
-      <button class="sl__preset" @click="preset(0.05, 5, 1)">Greedy</button>
+      <button class="sl__preset" @click="preset(0.05, 1, 1)">Greedy</button>
       <button class="sl__preset" @click="preset(1, 3, 1)">Top-k, k=3</button>
       <button class="sl__preset" @click="preset(1, 5, 0.6)">Top-p, p=0.6</button>
       <button class="sl__preset" @click="preset(2, 5, 1)">Гаряче, τ=2</button>
@@ -186,7 +190,7 @@ function preset(t: number, k: number, p: number) {
 
     <p v-if="props.context === 'table'" class="sl__fine">
       Ймовірності в таблиці лекції вже округлені, тому перерахунок від них дає, наприклад,
-      <code>.39 / .37 / .24</code>, а в підручнику надруковано <code>.39 / .36 / .25</code> —
+      <code>.39 / .37 / .24</code>, а в Xiao і Zhu надруковано <code>.39 / .36 / .25</code> —
       там нормували неокруглені значення. Розбіжність у сотих є наслідком округлення, а не помилкою.
     </p>
   </div>
