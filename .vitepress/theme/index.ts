@@ -35,6 +35,8 @@ import Resources from './components/Resources.vue'
 import RunOutput from './components/RunOutput.vue'
 import CodeFold from './components/CodeFold.vue'
 import ContextBudget from './components/ContextBudget.vue'
+import PPOClipLab from './components/PPOClipLab.vue'
+import DPOLab from './components/DPOLab.vue'
 import CourseHome from './components/CourseHome.vue'
 
 export default {
@@ -76,6 +78,8 @@ export default {
     app.component('RunOutput', RunOutput)
     app.component('CodeFold', CodeFold)
     app.component('ContextBudget', ContextBudget)
+    app.component('PPOClipLab', PPOClipLab)
+    app.component('DPOLab', DPOLab)
     app.component('CourseHome', CourseHome)
   },
 } satisfies Theme
