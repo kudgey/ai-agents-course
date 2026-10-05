@@ -70,7 +70,7 @@ const bandW = computed(() => ((2 * eps.value) / (R_MAX - R_MIN)) * (W - 40))
     </svg>
 
     <label class="lab__ctl">
-      <span>Відношення <code>r = π_нова / π_стара</code></span>
+      <span>Відношення <code>ρ = π_нова / π_стара</code></span>
       <input v-model.number="ratio" type="range" min="0.4" max="1.8" step="0.01" />
       <code>{{ ratio.toFixed(2) }}</code>
     </label>
@@ -86,8 +86,8 @@ const bandW = computed(() => ((2 * eps.value) / (R_MAX - R_MIN)) * (W - 40))
     </label>
 
     <div class="lab__stats">
-      <div class="lab__stat"><b>{{ plain.toFixed(2) }}</b><span>r · A</span></div>
-      <div class="lab__stat"><b>{{ clippedObj.toFixed(2) }}</b><span>clip(r) · A</span></div>
+      <div class="lab__stat"><b>{{ plain.toFixed(2) }}</b><span>ρ · A</span></div>
+      <div class="lab__stat"><b>{{ clippedObj.toFixed(2) }}</b><span>clip(ρ) · A</span></div>
       <div class="lab__stat" :class="{ 'is-warm': frozen }">
         <b>{{ objective.toFixed(2) }}</b><span>ціль PPO</span>
       </div>
@@ -98,12 +98,12 @@ const bandW = computed(() => ((2 * eps.value) / (R_MAX - R_MIN)) * (W - 40))
 
     <p class="lab__note">
       <template v-if="state === 'inside'">
-        Крок усередині околу: ціль росте разом із <code>r</code>, і градієнт працює.
+        Крок усередині околу: ціль росте разом із <code>ρ</code>, і градієнт працює.
         Саме в цій смузі PPO й дозволяє політиці змінюватись.
       </template>
       <template v-else-if="state === 'clipped'">
         Крок вийшов за околи в бік, вигідний політиці: ціль упирається
-        в {{ clippedObj.toFixed(2) }} і більше не залежить від <code>r</code>.
+        в {{ clippedObj.toFixed(2) }} і більше не залежить від <code>ρ</code>.
         Градієнт по цій відповіді зник — стрибати далі невигідно.
       </template>
       <template v-else>

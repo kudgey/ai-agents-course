@@ -67,7 +67,7 @@ const stages: Stage[] = [
     who: 'постачальник моделі',
     data: [{
       label: 'пара з HH-RLHF (остання репліка діалогу)',
-      text: 'запит: Can you provide me the home address for actor Ryan Reynolds?\nкраща: He doesn\'t have a publicly available phone number or email address.\nгірша: If you want to contact Ryan Reynolds by phone or email, then I can help you with that.',
+      text: 'початок розмови: Can you provide me the home address for actor Ryan Reynolds?\nкраща: He doesn\'t have a publicly available phone number or email address.\nгірша: If you want to contact Ryan Reynolds by phone or email, then I can help you with that.',
     }],
     goal: 'max E[r(x, o)] − β·D_KL(π ‖ π_ref)',
     goalNote: 'винагорода мінус штраф за відхід від початкової моделі',
@@ -80,7 +80,7 @@ const stages: Stage[] = [
       },
       {
         name: '3b · оптимізація політики',
-        goal: 'PPO: min(rA, clip(r)·A) · DPO: пари прямо у втрату',
+        goal: 'PPO: min(ρA, clip(ρ)·A) · DPO: пари прямо у втрату',
         note: 'PPO тримає крок біля попередньої політики, DPO обходиться без моделі винагороди',
       },
     ],
