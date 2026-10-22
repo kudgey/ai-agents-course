@@ -41,6 +41,9 @@ import TrainingPipelineLab from './components/TrainingPipelineLab.vue'
 import ShotLab from './components/ShotLab.vue'
 import PositionLab from './components/PositionLab.vue'
 import CourseHome from './components/CourseHome.vue'
+import MaskLab from './components/MaskLab.vue'
+import RetryLab from './components/RetryLab.vue'
+import MetricsLab from './components/MetricsLab.vue'
 
 export default {
   extends: DefaultTheme,
@@ -87,5 +90,8 @@ export default {
     app.component('ShotLab', ShotLab)
     app.component('PositionLab', PositionLab)
     app.component('CourseHome', CourseHome)
+    app.component('MaskLab', MaskLab)
+    app.component('RetryLab', RetryLab)
+    app.component('MetricsLab', MetricsLab)
   },
 } satisfies Theme

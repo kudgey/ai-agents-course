@@ -1,61 +1,51 @@
 <script setup lang="ts">
 /**
- * BM25 рахується тут повністю: idf, насичення частоти, нормалізація довжини.
- * Ручки k₁ і b рухають реальну видачу, а граничні випадки з таблиці —
- * кнопки, після яких видно, що саме кожен параметр вимикає.
+ * BM25 на шести фрагментах лекції 06 — тих самих, на яких текст рахує вручну.
+ * Корпус, запити, k₁ і b за замовчуванням читаються з lec06_toy.json;
+ * формула та токенізація — як у генераторі (натуральний логарифм, без стемінгу).
  */
 import { ref, computed } from 'vue'
+import data from '../../data/lec06_toy.json'
 
-const DOCS = [
-  'Перескладання іспитів проводиться з 3 по 14 лютого згідно з наказом 1-476.',
-  'Наказ 1-476 про порядок ліквідації академічної заборгованості студентами.',
-  'Розклад консультацій викладачів кафедри на лютий та березень.',
-  'Академічна заборгованість ліквідується у визначені деканатом строки; повторне складання іспиту допускається двічі.',
-  'Заява на перескладання подається до деканату не пізніше ніж за три дні.',
-  'Іспит з бази даних проводиться письмово; іспит з мереж — усно.',
-]
+const DOCS = data.docs as { id: string; topic: string; text: string }[]
+const QUERIES = data.queries as string[]
 
-const QUERIES = ['наказ 1-476', 'перескладання іспиту', 'заборгованість', 'іспит']
+const query = ref(QUERIES[1]) // основне питання лекції
+const k1 = ref(data.k1)
+const b = ref(data.b)
 
-const query = ref(QUERIES[0])
-const k1 = ref(1.5)
-const b = ref(0.75)
-
+/** Як re.split(r"[^\w]+", s.lower()) у Python. */
 function tokenize(s: string) {
-  return s.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, ' ').split(/\s+/).filter(Boolean)
+  return s.toLowerCase().split(/[^\p{L}\p{N}_]+/u).filter(Boolean)
 }
 
-const docTokens = DOCS.map(tokenize)
+const docTokens = DOCS.map((d) => tokenize(d.text))
 const avgLen = docTokens.reduce((s, d) => s + d.length, 0) / docTokens.length
 const N = DOCS.length
-
-function df(term: string) {
-  return docTokens.filter((d) => d.includes(term)).length
-}
+const df = (t: string) => docTokens.filter((d) => d.includes(t)).length
 
 const scored = computed(() => {
   const q = tokenize(query.value)
-  return DOCS.map((text, i) => {
+  return DOCS.map((doc, i) => {
     const d = docTokens[i]
     const parts = q.map((t) => {
       const tf = d.filter((x) => x === t).length
       const n = df(t)
-      if (!tf || !n) return { t, v: 0, tf, idf: 0 }
+      if (!tf || !n) return { t, tf, idf: 0, v: 0 }
       const idf = Math.log(N / n)
       const norm = k1.value * (1 - b.value + (b.value * d.length) / avgLen) + tf
-      return { t, v: (idf * tf) / norm, tf, idf }
+      return { t, tf, idf, v: (idf * tf) / norm }
     })
-    return { i, text, len: d.length, score: parts.reduce((s, p) => s + p.v, 0), parts }
-  }).sort((a, b2) => b2.score - a.score)
+    return { ...doc, len: d.length, score: parts.reduce((s, p) => s + p.v, 0), parts }
+  }).sort((x, y) => y.score - x.score || x.id.localeCompare(y.id))
 })
 
 const max = computed(() => Math.max(...scored.value.map((s) => s.score), 1e-9))
-const hits = computed(() => scored.value.filter((s) => s.score > 0).length)
 
 const mode = computed(() => {
-  if (k1.value === 0) return 'k₁ = 0: частота терма ігнорується, лишається сама idf'
-  if (b.value === 0) return 'b = 0: довжина документа не враховується взагалі'
-  if (b.value >= 0.999) return 'b = 1: повна нормалізація — довгі документи програють найсильніше'
+  if (k1.value === 0) return 'k₁ = 0: частка дорівнює 1 для будь-якої ненульової частоти — лишається сама idf'
+  if (b.value === 0) return 'b = 0: довжина фрагмента не враховується зовсім'
+  if (b.value >= 0.999) return 'b = 1: повна нормалізація за довжиною — довгі фрагменти втрачають найбільше'
   return null
 })
 </script>
@@ -64,10 +54,10 @@ const mode = computed(() => {
   <div class="lab">
     <div class="lab__head">
       <div>
-        <div class="lab__title">BM25 на маленькому корпусі</div>
+        <div class="lab__title">BM25 на шести фрагментах</div>
         <div class="lab__sub">
-          Шість документів навчального відділу. Формула рахується повністю —
-          змінюйте параметри й дивіться, як міняється порядок видачі.
+          Ті самі фрагменти й та сама формула, що в ручному розрахунку. Змінюйте запит
+          і параметри — порядок видачі перераховується повністю.
         </div>
       </div>
     </div>
@@ -96,21 +86,21 @@ const mode = computed(() => {
       <button class="lab__pill" @click="k1 = 0">k₁ = 0</button>
       <button class="lab__pill" @click="b = 0">b = 0</button>
       <button class="lab__pill" @click="b = 1">b = 1</button>
-      <button class="lab__pill" @click="k1 = 1.5; b = 0.75">типові 1.5 / 0.75</button>
+      <button class="lab__pill" @click="k1 = data.k1; b = data.b">як у тексті: 1.5 / 0.75</button>
     </div>
 
     <div v-if="mode" class="sr__edge">{{ mode }}</div>
 
     <div class="sr__list">
-      <div v-for="(d, r) in scored" :key="d.i" class="sr__doc" :class="{ 'is-zero': d.score === 0 }">
+      <div v-for="(d, r) in scored" :key="d.id" class="sr__doc" :class="{ 'is-zero': d.score === 0 }">
         <span class="sr__rank">{{ r + 1 }}</span>
         <div class="sr__body">
-          <div class="sr__text">{{ d.text }}</div>
+          <div class="sr__text"><b>{{ d.id }}</b> {{ d.text }}</div>
           <div class="sr__meta">
-            <span>{{ d.len }} слів</span>
+            <span>{{ d.len }} токенів</span>
             <template v-for="p in d.parts" :key="p.t">
               <span v-if="p.tf" class="sr__term">
-                {{ p.t }} · tf {{ p.tf }} · idf {{ p.idf.toFixed(2) }}
+                {{ p.t }} · tf {{ p.tf }} · idf {{ p.idf.toFixed(2) }} · внесок {{ p.v.toFixed(3) }}
               </span>
             </template>
           </div>
@@ -123,10 +113,9 @@ const mode = computed(() => {
     </div>
 
     <p class="lab__note">
-      Запит «наказ 1-476» знаходить потрібне з першої спроби, бо номер — це рідкісний терм
-      із великою idf. Саме такі запити щільний векторний пошук стабільно провалює, і саме
-      тому гібрид існує: {{ hits }} документів із {{ DOCS.length }} мають ненульовий скор,
-      решта не містить жодного терма запиту.
+      На запиті «коли перескладання з бази даних» бібліотека d6 стоїть другою лише через
+      спільне «з бази даних», а консультації d3 мають нуль: «перескладанням» для BM25 — інше
+      слово. Спробуйте запит «перескладанням» — і d3 стане єдиним знайденим фрагментом.
     </p>
   </div>
 </template>
@@ -173,6 +162,7 @@ const mode = computed(() => {
 }
 .sr__body { flex: 1; min-width: 0; }
 .sr__text { font-size: 0.84rem; line-height: 1.45; }
+.sr__text b { font-family: var(--vp-font-family-mono); font-size: 0.76rem; color: var(--uk-accent); margin-right: 0.2rem; }
 .sr__meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem; }
 .sr__meta span {
   font-family: var(--vp-font-family-mono);

@@ -1,1 +1,16 @@
-{}
+{
+ "8d3f9a7c51de": {
+  "out": "efSearch=8   recall@10 = 0.304\nefSearch=64  recall@10 = 0.806\n",
+  "python": "3.14.0",
+  "ran": "2026-10-23",
+  "sec": 2.5,
+  "status": "ok"
+ },
+ "dbc478306d48": {
+  "out": "d1 0.0328\nd2 0.0320\nd6 0.0318\nd3 0.0159\nd4 0.0154\n",
+  "python": "3.14.0",
+  "ran": "2026-10-23",
+  "sec": 0.0,
+  "status": "ok"
+ }
+}
