@@ -44,6 +44,9 @@ import CourseHome from './components/CourseHome.vue'
 import MaskLab from './components/MaskLab.vue'
 import RetryLab from './components/RetryLab.vue'
 import MetricsLab from './components/MetricsLab.vue'
+import BreakerLab from './components/BreakerLab.vue'
+import HNSWLab from './components/HNSWLab.vue'
+import RRFLab from './components/RRFLab.vue'
 
 export default {
   extends: DefaultTheme,
@@ -93,5 +96,8 @@ export default {
     app.component('MaskLab', MaskLab)
     app.component('RetryLab', RetryLab)
     app.component('MetricsLab', MetricsLab)
+    app.component('BreakerLab', BreakerLab)
+    app.component('HNSWLab', HNSWLab)
+    app.component('RRFLab', RRFLab)
   },
 } satisfies Theme

@@ -6,8 +6,10 @@
  *    фіксована пауза 1 с проти повного джитера (b = 0.5, C = 60).
  * Таймлайн джитера згенеровано з seed у lec05.json — ті самі числа, що в тексті.
  */
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import data from '../../data/lec05.json'
+import { useStepper } from '../composables/useStepper'
+import StepControls from './StepControls.vue'
 
 const PRESETS = data.retry as { p: number; e: number }[]
 const T = data.timeline as {
@@ -38,12 +40,33 @@ function peak(times: number[], width = 0.1) {
 const pk = computed(() => peak(rows.value.flat()))
 const last = computed(() => Math.max(...rows.value.flat()))
 
-const W = 640, LEFT = 34, RIGHT = 12, ROW = 17, TOP = 10
+// ── час: курсор іде кадрами по 50 мс; за замовчуванням — увесь таймлайн, як у тексті ──
 const TMAX = 3.2
+const FRAME = 0.05
+const { step, playing, reduced, next, play, reset, jump, done } =
+  useStepper(() => Math.round(TMAX / FRAME), { interval: 50 })
+watch(mode, () => jump(Math.round(TMAX / FRAME)))
+const tNow = computed(() => step.value * FRAME)
+const inWindow = computed(() => rows.value.flat().filter((t) => t > tNow.value - 0.1 && t <= tNow.value).length)
+/** «крок» — до наступного повтору будь-якого клієнта */
+function nextRetry() {
+  const later = rows.value.flat().filter((t) => t > tNow.value + 1e-9)
+  if (!later.length) return next()
+  jump(Math.ceil(Math.min(...later) / FRAME))
+}
+
+// ── геометрія: на телефоні вужча сцена, без горизонтальної прокрутки ──
+const narrow = ref(false)
+let mq: MediaQueryList | undefined
+const onMq = () => (narrow.value = !!mq?.matches)
+onMounted(() => { mq = window.matchMedia('(max-width: 720px)'); onMq(); mq.addEventListener('change', onMq) })
+onBeforeUnmount(() => mq?.removeEventListener('change', onMq))
+const W = computed(() => (narrow.value ? 340 : 640))
+const LEFT = 24, RIGHT = 10, ROW = 17, TOP = 10
 const H = TOP + ROW * 10 + 30
-const x = (t: number) => LEFT + (t / TMAX) * (W - LEFT - RIGHT)
+const x = (t: number) => LEFT + (t / TMAX) * (W.value - LEFT - RIGHT)
 const COLORS = ['var(--uk-accent)', 'var(--uk-green)', 'var(--uk-warm)']
-const ticks = [0, 0.5, 1, 1.5, 2, 2.5, 3]
+const ticks = computed(() => (narrow.value ? [0, 1, 2, 3] : [0, 0.5, 1, 1.5, 2, 2.5, 3]))
 </script>
 
 <template>
@@ -90,25 +113,30 @@ const ticks = [0, 0.5, 1, 1.5, 2, 2.5, 3]
       </button>
     </div>
 
-    <div class="rt__scroll">
+    <StepControls :playing="playing" :reduced="reduced" :done="done"
+                  :label="done ? 'увесь таймлайн' : `t = ${tNow.toFixed(2)} с · у вікні 100 мс: ${inWindow}`"
+                  @step="nextRetry" @play="play" @reset="reset" />
+
     <svg :viewBox="`0 0 ${W} ${H}`" class="rt__svg" role="img"
          aria-label="Моменти повторів десяти клієнтів">
-      <rect :x="x(pk.at)" :y="TOP - 4" :width="x(pk.at + 0.1) - x(pk.at)" :height="ROW * 10 + 4"
+      <rect v-if="done" :x="x(pk.at)" :y="TOP - 4" :width="x(pk.at + 0.1) - x(pk.at)" :height="ROW * 10 + 4"
             class="rt__peak" />
+      <rect v-else :x="x(Math.max(0, tNow - 0.1))" :y="TOP - 4" :width="x(tNow) - x(Math.max(0, tNow - 0.1))"
+            :height="ROW * 10 + 4" class="rt__now" />
       <g v-for="(row, c) in rows" :key="c">
         <text :x="LEFT - 8" :y="TOP + c * ROW + ROW / 2 + 3" class="rt__cl">{{ c + 1 }}</text>
         <line :x1="x(0)" :x2="x(TMAX)" :y1="TOP + c * ROW + ROW / 2" :y2="TOP + c * ROW + ROW / 2"
               class="rt__lane" />
         <circle :cx="x(0)" :cy="TOP + c * ROW + ROW / 2" r="3.5" class="rt__first" />
         <circle v-for="(t, n) in row" :key="n" :cx="x(t)" :cy="TOP + c * ROW + ROW / 2" r="4.5"
-                :fill="COLORS[n]" class="rt__dot" />
+                :fill="COLORS[n]" class="rt__dot" :class="{ 'is-later': t > tNow + 1e-9 }" />
       </g>
       <g v-for="t in ticks" :key="t">
         <line :x1="x(t)" :x2="x(t)" :y1="TOP + ROW * 10" :y2="TOP + ROW * 10 + 4" class="rt__lane" />
         <text :x="x(t)" :y="TOP + ROW * 10 + 16" class="rt__tick">{{ t }} с</text>
       </g>
+      <line v-if="!done" :x1="x(tNow)" :x2="x(tNow)" :y1="TOP - 4" :y2="TOP + ROW * 10" class="rt__cursor" />
     </svg>
-    </div>
     <div class="rt__legend">
       <span><i class="rt__sw rt__sw--first" /> перший запит, t = 0</span>
       <span v-for="(c, n) in COLORS" :key="n"><i class="rt__sw" :style="{ background: c }" /> {{ n + 1 }}-й повтор</span>
@@ -145,12 +173,14 @@ const ticks = [0, 0.5, 1, 1.5, 2, 2.5, 3]
 .rt__formula b { color: var(--uk-accent); font-weight: 600; }
 .rt__lbl { width: 6.6rem; }
 .rt__mode { margin-top: 1.1rem; }
-.rt__scroll { overflow-x: auto; max-width: 100%; }
-.rt__svg { width: 100%; min-width: 520px; height: auto; display: block; }
+.rt__svg { width: 100%; height: auto; display: block; }
+.rt__now { fill: var(--uk-accent-soft); }
+.rt__cursor { stroke: var(--uk-accent); stroke-width: 1.2; }
+.rt__dot.is-later { opacity: 0; }
 .rt__lane { stroke: var(--uk-line); stroke-width: 1; }
 .rt__peak { fill: var(--uk-warm-soft); }
 .rt__first { fill: var(--vp-c-text-3); opacity: 0.6; }
-.rt__dot { stroke: var(--vp-c-bg); stroke-width: 1; transition: cx 0.35s ease; }
+.rt__dot { stroke: var(--vp-c-bg); stroke-width: 1; transition: cx 0.35s ease, opacity 0.15s ease; }
 .rt__cl { font-size: 10px; fill: var(--vp-c-text-3); text-anchor: end; }
 .rt__tick { font-size: 10px; fill: var(--vp-c-text-3); text-anchor: middle; }
 .rt__legend {

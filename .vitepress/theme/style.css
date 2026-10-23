@@ -771,3 +771,9 @@ html.uk-pres .uk-figure__frame img {
   .lab pre,
   .lab [class$="__code"] { overflow-x: auto; max-width: 100%; }
 }
+
+/* Покрокові візуалізації: якщо користувач просить менше руху, переходи вимкнено,
+   а кнопка «відтворити» в StepControls неактивна — лишається тільки «крок». */
+@media (prefers-reduced-motion: reduce) {
+  .lab *, .lab *::before, .lab *::after { transition: none !important; animation: none !important; }
+}
