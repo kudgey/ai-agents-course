@@ -17,8 +17,6 @@ import LatencyLab from './components/LatencyLab.vue'
 import CILab from './components/CILab.vue'
 import PassKLab from './components/PassKLab.vue'
 import PromptAnatomy from './components/PromptAnatomy.vue'
-import ContractLab from './components/ContractLab.vue'
-import SearchLab from './components/SearchLab.vue'
 import ChunkingLab from './components/ChunkingLab.vue'
 import AgentLoopLab from './components/AgentLoopLab.vue'
 import ToolSpecLab from './components/ToolSpecLab.vue'
@@ -41,12 +39,6 @@ import TrainingPipelineLab from './components/TrainingPipelineLab.vue'
 import ShotLab from './components/ShotLab.vue'
 import PositionLab from './components/PositionLab.vue'
 import CourseHome from './components/CourseHome.vue'
-import MaskLab from './components/MaskLab.vue'
-import RetryLab from './components/RetryLab.vue'
-import MetricsLab from './components/MetricsLab.vue'
-import BreakerLab from './components/BreakerLab.vue'
-import HNSWLab from './components/HNSWLab.vue'
-import RRFLab from './components/RRFLab.vue'
 
 export default {
   extends: DefaultTheme,
@@ -69,8 +61,6 @@ export default {
     app.component('CILab', CILab)
     app.component('PassKLab', PassKLab)
     app.component('PromptAnatomy', PromptAnatomy)
-    app.component('ContractLab', ContractLab)
-    app.component('SearchLab', SearchLab)
     app.component('ChunkingLab', ChunkingLab)
     app.component('AgentLoopLab', AgentLoopLab)
     app.component('ToolSpecLab', ToolSpecLab)
@@ -93,11 +83,5 @@ export default {
     app.component('ShotLab', ShotLab)
     app.component('PositionLab', PositionLab)
     app.component('CourseHome', CourseHome)
-    app.component('MaskLab', MaskLab)
-    app.component('RetryLab', RetryLab)
-    app.component('MetricsLab', MetricsLab)
-    app.component('BreakerLab', BreakerLab)
-    app.component('HNSWLab', HNSWLab)
-    app.component('RRFLab', RRFLab)
   },
 } satisfies Theme
