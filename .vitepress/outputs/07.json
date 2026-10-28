@@ -3,7 +3,7 @@
   "out": "токенів у чанках: [512, 316, 104]\ndoc_id     наказ № 142\nvalid_from 2026-01-20\naccess     public\nversion    v1\nchunk_id   nakaz-142#1\nsource     nakaz-142.pdf, с. 1\nsection    пп. 1–5\ntext: Наказ № 142 від 20 січня 2026 року «Про організацію повторного складан …\n",
   "python": "3.14.0",
   "ran": "2026-10-28",
-  "sec": 0.3,
+  "sec": 0.4,
   "status": "ok"
  },
  "a1bbde3402d0": {
