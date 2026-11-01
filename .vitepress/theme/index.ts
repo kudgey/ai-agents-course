@@ -18,6 +18,10 @@ import CILab from './components/CILab.vue'
 import PassKLab from './components/PassKLab.vue'
 import PromptAnatomy from './components/PromptAnatomy.vue'
 import ChunkingLab from './components/ChunkingLab.vue'
+import FopParseLab from './components/FopParseLab.vue'
+import FopChunkLab from './components/FopChunkLab.vue'
+import FopSearchLab from './components/FopSearchLab.vue'
+import FopPromptView from './components/FopPromptView.vue'
 import AgentLoopLab from './components/AgentLoopLab.vue'
 import ToolSpecLab from './components/ToolSpecLab.vue'
 import MxNLab from './components/MxNLab.vue'
@@ -62,6 +66,10 @@ export default {
     app.component('PassKLab', PassKLab)
     app.component('PromptAnatomy', PromptAnatomy)
     app.component('ChunkingLab', ChunkingLab)
+    app.component('FopParseLab', FopParseLab)
+    app.component('FopChunkLab', FopChunkLab)
+    app.component('FopSearchLab', FopSearchLab)
+    app.component('FopPromptView', FopPromptView)
     app.component('AgentLoopLab', AgentLoopLab)
     app.component('ToolSpecLab', ToolSpecLab)
     app.component('MxNLab', MxNLab)

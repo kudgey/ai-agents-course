@@ -8,15 +8,17 @@
  * третьої колонки доводиться вгадувати. Підписи видно й на телефоні, де
  * жодна спільна шапка не помістилася б.
  */
-withDefaults(
+const props = withDefaults(
   defineProps<{
-    items: { k: string; v: string; extra?: string }[]
+    items: { k: string; v: string; extra?: string; [col: string]: string | undefined }[]
     head?: string[]
     accent?: 'accent' | 'warm' | 'green'
     numbered?: boolean
   }>(),
   { head: () => [], accent: 'accent', numbered: false }
 )
+// ::: cards cols: третя і далі колонки приходять як c2, c3… і мають кожна свій підпис
+const more = props.head.slice(2).map((_, i) => 'c' + (i + 2))
 </script>
 
 <template>
@@ -29,6 +31,12 @@ withDefaults(
         <span class="cds__v" v-html="it.v" />
         <span v-if="head[2] && it.extra" class="cds__lab">{{ head[2] }}</span>
         <span v-if="it.extra" class="cds__extra" v-html="it.extra" />
+        <template v-for="(c, j) in more" :key="c">
+          <template v-if="it[c]">
+            <span class="cds__lab">{{ head[j + 2] }}</span>
+            <span class="cds__v" v-html="it[c]" />
+          </template>
+        </template>
       </div>
     </div>
   </div>
