@@ -24,6 +24,7 @@ import FopSearchLab from './components/FopSearchLab.vue'
 import FopPromptView from './components/FopPromptView.vue'
 import FopEvalLab from './components/FopEvalLab.vue'
 import FopRewriteLab from './components/FopRewriteLab.vue'
+import FopRewritePrompt from './components/FopRewritePrompt.vue'
 import FopFaithLab from './components/FopFaithLab.vue'
 import AgentLoopLab from './components/AgentLoopLab.vue'
 import ToolSpecLab from './components/ToolSpecLab.vue'
@@ -75,6 +76,7 @@ export default {
     app.component('FopPromptView', FopPromptView)
     app.component('FopEvalLab', FopEvalLab)
     app.component('FopRewriteLab', FopRewriteLab)
+    app.component('FopRewritePrompt', FopRewritePrompt)
     app.component('FopFaithLab', FopFaithLab)
     app.component('AgentLoopLab', AgentLoopLab)
     app.component('ToolSpecLab', ToolSpecLab)
