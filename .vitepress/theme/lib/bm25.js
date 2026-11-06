@@ -36,3 +36,41 @@ export function score(index, query, k1, b) {
     return { i, len: d.length, parts, score: parts.reduce((s, p) => s + p.v, 0) }
   })
 }
+
+/** Лекція 08. Грубе обрізання закінчень: та сама регулярка, що в tools/l08_eval.py. */
+const ENDINGS = /(ого|ому|ими|ями|ами|ові|еві|ої|ою|ій|ий|ім|их|ах|ях|ів|ям|ам|ом|ем|ею|а|я|у|ю|і|и|е|о|ь)$/
+export const endings = ENDINGS.source
+export function stem(w) {
+  return w.length >= 5 && /^[а-щьюяіїєґ]+$/.test(w) ? w.replace(ENDINGS, '') : w
+}
+export const tokenizeStem = (s) => tokenize(s).map(stem)
+
+/** Видача BM25 як у l08_eval.py: кожен терм запиту один раз, чанк без спільних слів не входить. */
+export function rank(question, chunks, T = tokenize, k1 = 1.5, b = 0.75) {
+  const docs = chunks.map((c) => T(c.text))
+  const n = docs.length
+  const avg = docs.reduce((s, d) => s + d.length, 0) / n
+  const terms = [...new Set(T(question))]
+  const out = chunks.map((c, i) => {
+    let s = 0
+    for (const t of terms) {
+      const df = docs.filter((d) => d.includes(t)).length
+      const tf = docs[i].filter((x) => x === t).length
+      if (df && tf) s += Math.log(n / df) * share(tf, docs[i].length, avg, k1, b)
+    }
+    return { chunk_id: c.chunk_id, score: s }
+  })
+  return out.filter((r) => r.score > 0).sort((x, y) => y.score - x.score)
+}
+
+/** Reciprocal Rank Fusion: сума 1/(k + ранг) по списках; ranks — місця чанка в кожному списку. */
+export function rrf(lists, k = 60) {
+  const m = new Map()
+  lists.forEach((ls, j) => ls.forEach((r, i) => {
+    const e = m.get(r.chunk_id) ?? { chunk_id: r.chunk_id, score: 0, ranks: lists.map(() => null) }
+    e.score += 1 / (k + i + 1)
+    e.ranks[j] = i + 1
+    m.set(r.chunk_id, e)
+  }))
+  return [...m.values()].sort((x, y) => y.score - x.score)
+}

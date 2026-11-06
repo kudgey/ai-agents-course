@@ -22,6 +22,9 @@ import FopParseLab from './components/FopParseLab.vue'
 import FopChunkLab from './components/FopChunkLab.vue'
 import FopSearchLab from './components/FopSearchLab.vue'
 import FopPromptView from './components/FopPromptView.vue'
+import FopEvalLab from './components/FopEvalLab.vue'
+import FopRewriteLab from './components/FopRewriteLab.vue'
+import FopFaithLab from './components/FopFaithLab.vue'
 import AgentLoopLab from './components/AgentLoopLab.vue'
 import ToolSpecLab from './components/ToolSpecLab.vue'
 import MxNLab from './components/MxNLab.vue'
@@ -70,6 +73,9 @@ export default {
     app.component('FopChunkLab', FopChunkLab)
     app.component('FopSearchLab', FopSearchLab)
     app.component('FopPromptView', FopPromptView)
+    app.component('FopEvalLab', FopEvalLab)
+    app.component('FopRewriteLab', FopRewriteLab)
+    app.component('FopFaithLab', FopFaithLab)
     app.component('AgentLoopLab', AgentLoopLab)
     app.component('ToolSpecLab', ToolSpecLab)
     app.component('MxNLab', MxNLab)

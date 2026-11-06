@@ -1,30 +1,29 @@
 <script setup lang="ts">
 /**
- * Парне порівняння двох конфігурацій на одному наборі.
- * Стартовий стан відтворює приклад лекції: 15/20 проти 17/20,
- * Δ = +0.100, інтервал [−0.035, +0.235] — різниці немає.
+ * Парне порівняння двох конфігурацій на одному наборі. Стартовий стан — фактичні виходи
+ * набору лекції: Hit@1 конвеєра Л07 проти конвеєра з обрізанням закінчень (lec08.json).
+ * Формули ті самі, що в l08_eval.py: Вілсон для частки, парна різниця для порівняння.
  */
 import { ref, computed } from 'vue'
+import data from '../../data/lec08.json'
 
-const n = ref(20)
-// true = розв'язано. Стартово: A має 15 успіхів, B — ті самі плюс дві задачі.
+const BASE_A = data.ci.a as boolean[]
+const BASE_B = data.ci.b as boolean[]
+const IDS = data.ci.ids as string[]
+const n = ref(BASE_A.length)
 const A = ref<boolean[]>([])
 const B = ref<boolean[]>([])
+const Z = 1.96
 
-function seed(size: number) {
-  const a: boolean[] = [], b: boolean[] = []
-  for (let i = 0; i < size; i++) {
-    const okA = i % 4 !== 3            // 3 з 4 → 0.75
-    a.push(okA)
-    b.push(okA || i === 3 || i === 11) // дві провалені задачі стали успішними
-  }
-  A.value = a; B.value = b
+function seed(times: number) {
+  const rep = (v: boolean[]) => Array.from({ length: times }, () => v).flat()
+  A.value = rep(BASE_A); B.value = rep(BASE_B)
+  n.value = BASE_A.length * times
 }
-seed(20)
+seed(1)
 
 function resize(size: number) {
-  n.value = size
-  seed(size)
+  seed(size / BASE_A.length)
 }
 
 function toggle(which: 'A' | 'B', i: number) {
@@ -32,6 +31,20 @@ function toggle(which: 'A' | 'B', i: number) {
   const copy = [...arr.value]
   copy[i] = !copy[i]
   arr.value = copy
+}
+
+function wilson(k: number, N: number) {
+  const p = k / N, den = 1 + Z ** 2 / N
+  const mid = (p + Z ** 2 / (2 * N)) / den
+  const half = (Z * Math.sqrt((p * (1 - p)) / N + Z ** 2 / (4 * N ** 2))) / den
+  return [mid - half, mid + half]
+}
+const wA = computed(() => wilson(A.value.filter(Boolean).length, n.value))
+const wB = computed(() => wilson(B.value.filter(Boolean).length, n.value))
+const SIZES = [BASE_A.length, BASE_A.length * 3, BASE_A.length * 6]
+function questions(v: number) {
+  const a = v % 10, b = v % 100
+  return `${v} ${a === 1 && b !== 11 ? 'питання' : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 'питання' : 'питань'}`
 }
 
 const accA = computed(() => A.value.filter(Boolean).length / n.value)
@@ -78,44 +91,46 @@ function pos(v: number) {
       <div>
         <div class="lab__title">Чи є різниця між конфігураціями</div>
         <div class="lab__sub">
-          Клацніть будь-яку клітинку — результат задачі зміниться, і інтервал перерахується.
-          Стартовий стан — приклад із лекції: 15/20 проти 17/20.
+          Клітинка — одне питання: зафарбована, якщо правильний чанк стоїть першим. Стартовий стан — наш
+          набір. Клацніть клітинку, і інтервали перерахуються.
         </div>
       </div>
       <button class="lab__btn" @click="resize(n)">Скинути</button>
     </div>
 
     <div class="lab__pills">
-      <button class="lab__pill" :class="{ 'is-on': n === 20 }" @click="resize(20)">20 задач</button>
-      <button class="lab__pill" :class="{ 'is-on': n === 60 }" @click="resize(60)">60 задач</button>
-      <button class="lab__pill" :class="{ 'is-on': n === 200 }" @click="resize(200)">200 задач</button>
+      <button v-for="(s, i) in SIZES" :key="s" class="lab__pill" :class="{ 'is-on': n === s }" @click="resize(s)">
+        {{ i ? `${questions(s)}, ті самі частки` : `${questions(s)}: наш набір` }}
+      </button>
     </div>
 
     <div class="ci__sets">
       <div class="ci__set">
-        <span class="ci__name">Конфігурація A</span>
+        <span class="ci__name">Конвеєр Л07</span>
         <div class="ci__cells">
           <button
             v-for="(v, i) in A" :key="i"
             class="ci__cell" :class="{ 'is-ok': v }"
-            :title="`задача ${i + 1}`"
+            :title="IDS[i % IDS.length]"
             @click="toggle('A', i)"
           />
         </div>
-        <b class="ci__acc">{{ (accA * 100).toFixed(0) }} %</b>
+        <b class="ci__acc">{{ accA.toFixed(3) }}</b>
       </div>
+      <div class="ci__wil">Вілсон, 95 %: [{{ wA[0].toFixed(3) }}; {{ wA[1].toFixed(3) }}]</div>
       <div class="ci__set">
-        <span class="ci__name">Конфігурація B</span>
+        <span class="ci__name">+ обрізання закінчень</span>
         <div class="ci__cells">
           <button
             v-for="(v, i) in B" :key="i"
             class="ci__cell" :class="{ 'is-ok': v, 'is-flip': diffs[i] !== 0 }"
-            :title="`задача ${i + 1}`"
+            :title="IDS[i % IDS.length]"
             @click="toggle('B', i)"
           />
         </div>
-        <b class="ci__acc">{{ (accB * 100).toFixed(0) }} %</b>
+        <b class="ci__acc">{{ accB.toFixed(3) }}</b>
       </div>
+      <div class="ci__wil">Вілсон, 95 %: [{{ wB[0].toFixed(3) }}; {{ wB[1].toFixed(3) }}]</div>
     </div>
 
     <div class="ci__axis">
@@ -143,22 +158,21 @@ function pos(v: number) {
         <span>{{ significant ? 'нуль поза інтервалом' : 'інтервал накриває нуль' }}</span>
       </div>
       <div class="lab__stat" v-if="needed">
-        <b>{{ needed }}</b><span>задач треба для висновку</span>
+        <b>{{ questions(needed) }}</b><span>треба для цього ефекту: 1.96²·s²/d̄²</span>
       </div>
     </div>
 
     <p class="lab__note">
-      На користь B зіграло задач: <b>{{ flips.up }}</b>, на користь A: <b>{{ flips.down }}</b>.
-      Решта набору — <b>{{ flips.same }}</b> — у порівнянні не бере участі взагалі, бо обидві
-      конфігурації там поводяться однаково. Саме тому парне порівняння бачить менші ефекти,
-      ніж два окремі інтервали. Перемкніть набір на 200 задач: та сама різниця раптом стає
-      значущою, і жодна зміна в системі для цього не знадобилась.
+      На користь другої конфігурації зіграло питань: <b>{{ flips.up }}</b>, на користь першої: <b>{{ flips.down }}</b>.
+      Решта — <b>{{ flips.same }}</b> — у порівнянні участі не бере: там обидві конфігурації поводяться однаково.
+      Тому два інтервали часток перетинаються, а парний інтервал нуль не накриває: він рахує лише різницю на тих самих питаннях.
     </p>
   </div>
 </template>
 
 <style scoped>
-.ci__sets { display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 1.2rem; }
+.ci__sets { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.2rem; }
+.ci__wil { font-size: 0.74rem; color: var(--vp-c-text-3); margin: 0 0 0.35rem 9.2rem; }
 .ci__set { display: flex; align-items: center; gap: 0.7rem; }
 .ci__name { font-size: 0.8rem; color: var(--vp-c-text-2); width: 8.5rem; flex: none; }
 .ci__cells { display: flex; flex-wrap: wrap; gap: 2px; flex: 1; }
@@ -178,7 +192,7 @@ function pos(v: number) {
 .ci__acc {
   font-family: var(--vp-font-family-mono);
   font-size: 0.85rem;
-  width: 3rem;
+  width: 3.4rem;
   text-align: right;
   flex: none;
   color: var(--vp-c-text-2);
@@ -217,4 +231,10 @@ function pos(v: number) {
 .ci__tick--l { left: 4px; }
 .ci__tick--c { left: 50%; transform: translateX(-50%); }
 .ci__tick--r { right: 4px; }
+@media (max-width: 640px) {
+  .ci__set { flex-wrap: wrap; }
+  .ci__name { width: auto; flex: 1 1 auto; }
+  .ci__cells { order: 3; flex: 0 0 100%; }
+  .ci__wil { margin-left: 0; }
+}
 </style>

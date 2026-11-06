@@ -57,5 +57,12 @@
   "https://cdn.sanity.io/images/vr8gru94/production/906c3c0f8fe637840f134dbf966839ef89ac7242-3443x1641.png": "/figs/ext/pinecone-05945e-906c3c0f8fe637840f134dbf966839ef89ac7242.png",
   "https://arxiv.org/html/2307.03172v3/qa_example.svg": "/figs/ext/arxiv-8c89b2-qa_example.png",
   "https://arxiv.org/html/2307.03172v3/figure1.svg": "/figs/ext/arxiv-b23451-figure1.png",
-  "https://arxiv.org/html/2305.14627v2/main.png": "/figs/ext/arxiv-8a5c0b-main.png"
+  "https://arxiv.org/html/2305.14627v2/main.png": "/figs/ext/arxiv-8a5c0b-main.png",
+  "https://cdn.sanity.io/images/vr8gru94/production/74baa4032f93d8444e0b52e3aacbb1e5278c1f90-921x561.png": "/figs/ext/pinecone-b7f603-74baa4032f93d8444e0b52e3aacbb1e5278c1f90.png",
+  "https://cdn.sanity.io/images/vr8gru94/production/f04df4e20cd5948ed3bc2e88e2475573b8ca1d2a-3314x2617.png": "/figs/ext/pinecone-a718aa-f04df4e20cd5948ed3bc2e88e2475573b8ca1d2a.png",
+  "https://cdn.sanity.io/images/vr8gru94/production/4509817116ab72e27bae809c38cb48fbf1578b5d-2760x1420.png": "/figs/ext/pinecone-007295-4509817116ab72e27bae809c38cb48fbf1578b5d.png",
+  "https://cdn.sanity.io/images/vr8gru94/production/9f0d2f75571bb58eecf2520a23d300a5fc5b1e2c-2440x1100.png": "/figs/ext/pinecone-98f200-9f0d2f75571bb58eecf2520a23d300a5fc5b1e2c.png",
+  "https://arxiv.org/html/2305.14283v3/f1-crop.png": "/figs/ext/arxiv-0d174b-f1-crop.png",
+  "https://arxiv.org/html/2402.03367v2/Diag1.png": "/figs/ext/arxiv-debc00-Diag1.png",
+  "https://www.trulens.org/assets/images/RAG_Triad.png": "/figs/ext/trulens-ced474-RAG_Triad.png"
 }
