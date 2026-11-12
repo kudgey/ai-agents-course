@@ -64,5 +64,16 @@
   "https://cdn.sanity.io/images/vr8gru94/production/9f0d2f75571bb58eecf2520a23d300a5fc5b1e2c-2440x1100.png": "/figs/ext/pinecone-98f200-9f0d2f75571bb58eecf2520a23d300a5fc5b1e2c.png",
   "https://arxiv.org/html/2305.14283v3/f1-crop.png": "/figs/ext/arxiv-0d174b-f1-crop.png",
   "https://arxiv.org/html/2402.03367v2/Diag1.png": "/figs/ext/arxiv-debc00-Diag1.png",
-  "https://www.trulens.org/assets/images/RAG_Triad.png": "/figs/ext/trulens-ced474-RAG_Triad.png"
+  "https://www.trulens.org/assets/images/RAG_Triad.png": "/figs/ext/trulens-ced474-RAG_Triad.png",
+  "https://arxiv.org/html/2309.06180v1/memory-distribution.svg": "/figs/ext/arxiv-633359-memory-distribution.png",
+  "https://arxiv.org/html/2309.06180v1/memory_breakdown.svg": "/figs/ext/arxiv-5c344b-memory_breakdown.png",
+  "https://arxiv.org/html/2306.00978v6/method.svg": "/figs/ext/arxiv-b28b8d-method.png",
+  "https://arxiv.org/html/2403.02310v3/analysis_tput.svg": "/figs/ext/arxiv-17b260-analysis_tput.png",
+  "https://arxiv.org/html/2403.02310v3/sarathi_server_timeline.svg": "/figs/ext/arxiv-6308fc-sarathi_server_timeline.png",
+  "https://substack-post-media.s3.amazonaws.com/public/images/782beaa8-340f-45b8-ba7f-20491f66867a_1172x848.png": "/figs/ext/grootendorst-56c521-782beaa8-340f-45b8-ba7f-20491f66867a_1172x848.png",
+  "https://substack-post-media.s3.amazonaws.com/public/images/72052ddb-1c54-45b3-9800-2c4335cc9581_1120x564.png": "/figs/ext/grootendorst-0a7ef9-72052ddb-1c54-45b3-9800-2c4335cc9581_1120x564.png",
+  "https://substack-post-media.s3.amazonaws.com/public/images/98047d62-3925-4a29-a23b-c5bfa517f073_894x480.png": "/figs/ext/grootendorst-cfab07-98047d62-3925-4a29-a23b-c5bfa517f073_894x480.png",
+  "https://vllm.ai/blog-assets/figures/annimation1.gif": "/figs/ext/vllm-0d2811-annimation1.gif",
+  "https://images.ctfassets.net/xjan103pcp94/1LJioEsEdQQpDCxYNWirU6/82b9fbfc5b78b10c1d4508b60e72fdcf/cb_02_diagram-static-batching.png": "/figs/ext/anyscale-1d1ec8-cb_02_diagram-static-batching.png",
+  "https://images.ctfassets.net/xjan103pcp94/744TAv4dJIQqeHcEaz5lko/b823cc2d92bbb0d82eb252901e1dce6d/cb_03_diagram-continuous-batching.png": "/figs/ext/anyscale-62b1dd-cb_03_diagram-continuous-batching.png"
 }

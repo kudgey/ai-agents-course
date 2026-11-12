@@ -25,6 +25,9 @@ import FopPromptView from './components/FopPromptView.vue'
 import FopEvalLab from './components/FopEvalLab.vue'
 import FopRewriteLab from './components/FopRewriteLab.vue'
 import FopRewritePrompt from './components/FopRewritePrompt.vue'
+import GpuBudgetLab from './components/GpuBudgetLab.vue'
+import QuantLab from './components/QuantLab.vue'
+import BatchLab from './components/BatchLab.vue'
 import FopFaithLab from './components/FopFaithLab.vue'
 import AgentLoopLab from './components/AgentLoopLab.vue'
 import ToolSpecLab from './components/ToolSpecLab.vue'
@@ -77,6 +80,9 @@ export default {
     app.component('FopEvalLab', FopEvalLab)
     app.component('FopRewriteLab', FopRewriteLab)
     app.component('FopRewritePrompt', FopRewritePrompt)
+    app.component('GpuBudgetLab', GpuBudgetLab)
+    app.component('QuantLab', QuantLab)
+    app.component('BatchLab', BatchLab)
     app.component('FopFaithLab', FopFaithLab)
     app.component('AgentLoopLab', AgentLoopLab)
     app.component('ToolSpecLab', ToolSpecLab)

@@ -1,0 +1,336 @@
+{
+"model": {
+"name": "Qwen3-8B",
+"url": "https://huggingface.co/Qwen/Qwen3-8B",
+"layers": 36,
+"q_heads": 32,
+"kv_heads": 8,
+"head_dim": 128,
+"hidden": 4096,
+"vocab": 151936,
+"params": 8190735360,
+"params_16bit": 1244967936,
+"max_positions": 40960,
+"license": "Apache 2.0"
+},
+"formats": [
+{
+"key": "bf16",
+"label": "BF16",
+"bits": 16,
+"bytes": 16381516776,
+"repo": "Qwen/Qwen3-8B"
+},
+{
+"key": "fp8",
+"label": "FP8",
+"bits": 8,
+"bytes": 9436628784,
+"repo": "Qwen/Qwen3-8B-FP8"
+},
+{
+"key": "awq",
+"label": "AWQ 4 біти",
+"bits": 4,
+"bytes": 6098581864,
+"repo": "Qwen/Qwen3-8B-AWQ"
+},
+{
+"key": "q8_0",
+"label": "GGUF Q8_0",
+"bits": 8,
+"bytes": 8709518112,
+"repo": "Qwen/Qwen3-8B-GGUF"
+},
+{
+"key": "q6_k",
+"label": "GGUF Q6_K",
+"bits": 6,
+"bytes": 6725899040,
+"repo": "Qwen/Qwen3-8B-GGUF"
+},
+{
+"key": "q5_k_m",
+"label": "GGUF Q5_K_M",
+"bits": 5,
+"bytes": 5851112224,
+"repo": "Qwen/Qwen3-8B-GGUF"
+},
+{
+"key": "q4_k_m",
+"label": "GGUF Q4_K_M",
+"bits": 4,
+"bytes": 5027783488,
+"repo": "Qwen/Qwen3-8B-GGUF"
+}
+],
+"server_formats": [
+"bf16",
+"fp8",
+"awq"
+],
+"devices": [
+{
+"key": "4090",
+"label": "RTX 4090",
+"mem_gib": 24,
+"bw": 1008,
+"tflops": 165.2,
+"url": "https://images.nvidia.com/aem-dam/Solutions/geforce/ada/nvidia-ada-gpu-architecture.pdf"
+},
+{
+"key": "h100",
+"label": "H100 SXM",
+"mem_gib": 80,
+"bw": 3350,
+"tflops": 989.5,
+"url": "https://www.nvidia.com/en-us/data-center/h100/"
+}
+],
+"util": 0.9,
+"overhead": 3.0,
+"gib": 1.073741824,
+"request": {
+"input": 2731,
+"reserve": 512,
+"total": 3243,
+"budget": 8192,
+"decode_ctx": 2987
+},
+"kv": {
+"bf16": 147456,
+"fp8": 73728
+},
+"budget": {
+"4090/bf16/bf16": {
+"pool": 3.811,
+"n_budget": 3,
+"n_req": 7
+},
+"4090/bf16/fp8": {
+"pool": 3.811,
+"n_budget": 6,
+"n_req": 15
+},
+"4090/fp8/bf16": {
+"pool": 10.756,
+"n_budget": 8,
+"n_req": 22
+},
+"4090/fp8/fp8": {
+"pool": 10.756,
+"n_budget": 17,
+"n_req": 44
+},
+"4090/awq/bf16": {
+"pool": 14.094,
+"n_budget": 11,
+"n_req": 29
+},
+"4090/awq/fp8": {
+"pool": 14.094,
+"n_budget": 23,
+"n_req": 58
+},
+"h100/bf16/bf16": {
+"pool": 57.928,
+"n_budget": 47,
+"n_req": 121
+},
+"h100/bf16/fp8": {
+"pool": 57.928,
+"n_budget": 95,
+"n_req": 242
+},
+"h100/fp8/bf16": {
+"pool": 64.873,
+"n_budget": 53,
+"n_req": 135
+},
+"h100/fp8/fp8": {
+"pool": 64.873,
+"n_budget": 107,
+"n_req": 271
+},
+"h100/awq/bf16": {
+"pool": 68.211,
+"n_budget": 56,
+"n_req": 142
+},
+"h100/awq/fp8": {
+"pool": 68.211,
+"n_budget": 112,
+"n_req": 285
+}
+},
+"speed": {
+"4090/bf16/1": 16.688,
+"4090/bf16/3": 17.562,
+"4090/bf16/7": 19.31,
+"4090/fp8/1": 9.799,
+"4090/fp8/8": 12.857,
+"4090/fp8/22": 18.975,
+"4090/awq/1": 6.487,
+"4090/awq/11": 10.857,
+"4090/awq/29": 18.722,
+"h100/bf16/1": 5.021,
+"h100/bf16/47": 11.069,
+"h100/bf16/121": 20.799,
+"h100/fp8/1": 2.948,
+"h100/fp8/53": 9.785,
+"h100/fp8/135": 20.566,
+"h100/awq/1": 1.952,
+"h100/awq/56": 9.183,
+"h100/awq/142": 20.49
+},
+"quant": {
+"base": 5.6,
+"grid": [
+{
+"bits": 8,
+"group": null,
+"ppl": 5.62,
+"levels": 251,
+"delta": 0.003
+},
+{
+"bits": 8,
+"group": 64,
+"ppl": 5.6,
+"levels": 255,
+"delta": 0.001
+},
+{
+"bits": 4,
+"group": null,
+"ppl": 7.16,
+"levels": 15,
+"delta": 0.278
+},
+{
+"bits": 4,
+"group": 64,
+"ppl": 5.78,
+"levels": 15,
+"delta": 0.033
+},
+{
+"bits": 3,
+"group": null,
+"ppl": 33.53,
+"levels": 7,
+"delta": 4.989
+},
+{
+"bits": 3,
+"group": 64,
+"ppl": 7.16,
+"levels": 7,
+"delta": 0.278
+},
+{
+"bits": 2,
+"group": null,
+"ppl": 192.38,
+"levels": 3,
+"delta": 33.365
+},
+{
+"bits": 2,
+"group": 64,
+"ppl": 62.54,
+"levels": 3,
+"delta": 10.172
+}
+],
+"n_linear": 1359168,
+"n_all": 1423463,
+"slice": {
+"matrix": "body.layers.2.linear2.weight",
+"shape": [
+192,
+768
+],
+"group_index": 1524,
+"weights": [
+0.00974,
+0.06205,
+-0.01572,
+-0.09292,
+-0.02519,
+0.00747,
+-0.0804,
+0.04146,
+0.05947,
+-0.13167,
+-0.01852,
+-0.03219,
+-0.18082,
+-0.09449,
+-0.08831,
+0.03391,
+0.0758,
+0.10948,
+0.02661,
+0.10632,
+-0.19917,
+-0.06379,
+-0.00032,
+-0.08836,
+0.08542,
+-0.09546,
+-0.13381,
+0.01195,
+0.00601,
+-0.11436,
+-0.07226,
+0.05366,
+-0.01278,
+0.01477,
+0.02853,
+-0.18689,
+-0.14675,
+-0.03811,
+0.01711,
+-0.2214,
+0.09227,
+-0.03848,
+0.00569,
+-0.14697,
+0.08489,
+-0.01389,
+0.14472,
+-0.21089,
+0.01949,
+0.01009,
+0.07318,
+-0.00854,
+0.049,
+-0.00525,
+-0.10806,
+0.03535,
+0.01028,
+0.10552,
+-0.04714,
+-0.00398,
+-0.11567,
+-0.00774,
+-0.14909,
+-0.05509
+],
+"tensor_max": 0.57387,
+"group_max": 0.2214,
+"zeros_4_tensor": 27,
+"zeros_4_group": 16,
+"zeros_3_tensor": 47,
+"zeros_3_group": 25,
+"zeros_2_tensor": 64,
+"zeros_2_group": 51
+},
+"samples": {
+"base": "Модель грефіксована токеномірно. усе є неває. П'яти роз",
+"q4g64": "Модель грефіксована токеному за сумагентніша виходовані",
+"q2g64": "Модель ноном позн ze даютьn ' внодовновньномнимна:uсна "
+}
+}
+}
