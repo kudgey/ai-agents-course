@@ -3,7 +3,8 @@
  * Пам'ять картки під асистента ФОП: ваги, запас, пул KV-кешу і скільки запитів у ньому вміщається.
  * Арифметика — спільна lib/l09.js; l09_calc.py --check звіряє її з генератором (lec09.json).
  * stage="1": лише вибір картки, ваги BF16, резерв на весь бюджет запиту (розділ 1).
- * stage="4": ще формат ваг, точність кешу й посторінковий кеш (розділ 4).
+ * stage="4": RTX 4090 і чотири сходинки лекції — BF16, AWQ, сторінки кешу, кеш FP8 (розділ 4).
+ *   У режимі резерву клітинка показує, яку частку резерву запит справді заповнює.
  */
 import { ref, computed } from 'vue'
 import data from '../../data/lec09.json'
@@ -12,12 +13,20 @@ import { budget, kvPerToken } from '../lib/l09.js'
 const props = withDefaults(defineProps<{ stage?: string }>(), { stage: '4' })
 const full = computed(() => props.stage !== '1')
 const FMT = Object.fromEntries(data.formats.map((f) => [f.key, f]))
-const fmts = data.server_formats.map((k: string) => FMT[k])
 
+const STEPS = [
+  { label: 'BF16, резерв', fmt: 'bf16', kv: 2, paged: false },
+  { label: 'AWQ, резерв', fmt: 'awq', kv: 2, paged: false },
+  { label: 'AWQ, сторінки', fmt: 'awq', kv: 2, paged: true },
+  { label: 'AWQ, сторінки, кеш FP8', fmt: 'awq', kv: 1, paged: true },
+]
 const dev = ref(data.devices[0])
-const fmt = ref(FMT.bf16)
-const kvBytes = ref(2)
-const paged = ref(false)
+const si = ref(0)
+const st = computed(() => STEPS[si.value])
+const fmt = computed(() => FMT[st.value.fmt])
+const kvBytes = computed(() => st.value.kv)
+const paged = computed(() => st.value.paged)
+const used = computed(() => (full.value && !paged.value ? data.request.total / data.request.budget : 1))
 
 const tokens = computed(() => (full.value && paged.value ? data.request.total : data.request.budget))
 const b = computed(() => budget(data, dev.value, full.value ? fmt.value : FMT.bf16, full.value ? kvBytes.value : 2, tokens.value))
@@ -35,33 +44,26 @@ const kib = computed(() => kvPerToken(data.model, full.value ? kvBytes.value : 2
         <div class="lab__title">Пам'ять картки під асистента ФОП</div>
         <div class="lab__sub">
           Смуга — уся пам'ять картки. vLLM бере {{ data.util * 100 }} %: з них ваги, запас на активації, решта — пул KV-кешу.
-          Кожна клітинка в пулі — кеш одного запиту на {{ tokens.toLocaleString('uk-UA') }} токенів.
+          Кожна клітинка в пулі — кеш одного запиту на {{ tokens.toLocaleString('uk-UA') }} токенів<template v-if="full && !paged">;
+          темна частина — {{ data.request.total.toLocaleString('uk-UA') }} токенів, які запит справді заповнює, світла — порожній резерв</template>.
         </div>
       </div>
     </div>
 
-    <div class="lab__pills">
+    <div v-if="!full" class="lab__pills">
       <button v-for="d in data.devices" :key="d.key" class="lab__pill" :class="{ 'is-on': dev.key === d.key }" @click="dev = d">
         {{ d.label }}, {{ d.mem_gib }} ГіБ
       </button>
     </div>
-    <template v-if="full">
-      <div class="lab__pills">
-        <button v-for="f in fmts" :key="f.key" class="lab__pill" :class="{ 'is-on': fmt.key === f.key }" @click="fmt = f">ваги {{ f.label }}</button>
-      </div>
-      <div class="lab__pills">
-        <button class="lab__pill" :class="{ 'is-on': kvBytes === 2 }" @click="kvBytes = 2">кеш BF16</button>
-        <button class="lab__pill" :class="{ 'is-on': kvBytes === 1 }" @click="kvBytes = 1">кеш FP8</button>
-        <button class="lab__pill" :class="{ 'is-on': !paged }" @click="paged = false">резерв {{ data.request.budget.toLocaleString('uk-UA') }} на запит</button>
-        <button class="lab__pill" :class="{ 'is-on': paged }" @click="paged = true">сторінки: фактичні {{ data.request.total.toLocaleString('uk-UA') }}</button>
-      </div>
-    </template>
+    <div v-else class="lab__pills">
+      <button v-for="(x, i) in STEPS" :key="i" class="lab__pill" :class="{ 'is-on': si === i }" @click="si = i">{{ i + 1 }}. {{ x.label }}</button>
+    </div>
 
     <div class="gb__bar">
       <span class="gb__w" :style="{ width: pct(w) + '%' }" />
       <span class="gb__r" :style="{ width: pct(data.overhead) + '%' }" />
       <span class="gb__kv" :style="{ width: pct(Math.max(0, b.pool)) + '%' }">
-        <i v-for="i in blocks" :key="i" :style="{ width: (100 * b.per) / Math.max(b.pool, 1e-9) + '%' }" />
+        <i v-for="i in blocks" :key="i" :style="{ width: (100 * b.per) / Math.max(b.pool, 1e-9) + '%', '--used': used * 100 + '%' }" />
       </span>
       <span class="gb__free" />
     </div>
@@ -69,13 +71,15 @@ const kib = computed(() => kvPerToken(data.model, full.value ? kvBytes.value : 2
       <span><i class="gb__w" />ваги {{ f2(w) }} ГБ</span>
       <span><i class="gb__r" />запас {{ data.overhead }} ГБ</span>
       <span><i class="gb__kvl" />пул KV, клітинка — запит</span>
+      <span v-if="used < 1"><i class="gb__kvr" />порожній резерв</span>
       <span><i class="gb__free" />не бере vLLM</span>
     </div>
 
     <div class="lab__stats">
       <div class="lab__stat" :class="b.n < 4 ? 'is-warm' : 'is-green'"><b>{{ b.n }}</b><span>запитів одночасно</span></div>
       <div class="lab__stat"><b>{{ f2(b.pool) }} ГБ</b><span>пул KV-кешу</span></div>
-      <div class="lab__stat"><b>{{ b.per.toFixed(3) }} ГБ</b><span>кеш одного запиту, {{ kib }} КіБ на токен</span></div>
+      <div v-if="full" class="lab__stat" :class="used < 1 ? 'is-warm' : ''"><b>{{ Math.round(used * 100) }} %</b><span>пулу справді зайнято токенами</span></div>
+      <div v-else class="lab__stat"><b>{{ b.per.toFixed(3) }} ГБ</b><span>кеш одного запиту, {{ kib }} КіБ на токен</span></div>
     </div>
 
     <div class="gb__calc">
@@ -91,7 +95,8 @@ const kib = computed(() => kvPerToken(data.model, full.value ? kvBytes.value : 2
 .gb__w { background: var(--uk-accent); }
 .gb__r { background: #9a9aa8; }
 .gb__kv { background: var(--uk-green-soft); display: flex; gap: 1px; padding: 3px; box-sizing: border-box; overflow: hidden; }
-.gb__kv i { flex: none; height: 100%; background: var(--uk-green); border-radius: 2px; min-width: 1px; }
+.gb__kv i { flex: none; height: 100%; border-radius: 2px; min-width: 1px; background: linear-gradient(to top, var(--uk-green) var(--used, 100%), var(--uk-green-soft) var(--used, 100%)); box-shadow: inset 0 0 0 1px var(--uk-green); }
+.gb__kvr { background: var(--uk-green-soft); box-shadow: inset 0 0 0 1px var(--uk-green); }
 .gb__kvl { background: var(--uk-green); }
 .gb__free { flex: 1 1 auto !important; background: repeating-linear-gradient(45deg, var(--uk-fill), var(--uk-fill) 4px, var(--uk-line) 4px, var(--uk-line) 5px); }
 .gb__legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; font-size: 0.74rem; color: var(--vp-c-text-2); margin-bottom: 0.6rem; }
